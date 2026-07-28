@@ -1,66 +1,76 @@
 /* =========================================================
    ZuZu — waitlist landing
-   Warm, textured, human. Grounded in the brand assets:
-   pastel grain-gradient + near-black ink + the pinwheel mark.
+   Aligned to the ZuZu Brand Guide V1.1:
+   DM Mono (display · labels · numbers · wordmark) + DM Sans (body),
+   weight discipline (nothing over Medium, no italics),
+   brand palette + grainy horizontal-band gradients.
    ========================================================= */
 
 :root {
-  --ink:        #14110f;   /* near-black, warm — text/foreground */
+  /* Brand palette — ZuZu Brand Guide V1.1 */
+  --ink:        #14110f;   /* warm near-black — text/foreground */
   --ink-soft:   #4a423c;
-  --ink-faint:  #6f655c;   /* darkened from #8c8077 to clear WCAG AA (4.5:1) on cream */
-  --cream:      #f7f3ee;   /* warm off-white canvas — background */
-  --cream-deep: #efe8df;   /* raised surface (seg track, tags) */
-  --line:       #e3d9cd;
-  --lilac:      #c9c2ef;
-  --blush:      #f3cdda;
-  --mint:       #cfe7d8;
-  --periwinkle: #6a5cff;   /* accent (light). Overridden to sage green in dark per brand guideline */
-  --pink:       #d65f97;   /* muted hot pink — button hover (tuned to the lavender/blush gradient) */
+  --ink-faint:  #6f655c;   /* passes WCAG AA (4.5:1) on the light surface */
+  --cream:      #f6f2f0;   /* Primary MAIN (light) — page anchor */
+  --cream-deep: #efe9e6;   /* raised surface (toggle track, chips) */
+  --line:       #e2dbd4;   /* hairline */
+  /* Solid 1px hairline + white card fill — matches the app (input border #b2aca7). */
+  --hairline:   rgba(20, 17, 15, .22);
+  --card-bg:    rgba(255, 255, 255, .86);
+  --ring:       #d9c5ed;   /* lilac selection ring — "selection belongs to the ring" */
+  --lilac:      #d1c3db;   /* light-mode accent / emphasis fill */
+  --blush:      #eed7e3;   /* primary gradient stop */
+  --peri:       #bdc1de;   /* primary gradient stop (periwinkle) */
+  --periwinkle: #5b725a;   /* sage — labels & numeric accents (4.72:1 on light) */
+  --pink:       #5b725a;   /* legacy alias → sage, kept on-brand */
 
-  --mono: "Space Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  /* Themeable surfaces (overridden in dark) */
-  --dash:           #cabca7;                  /* blueprint dashed borders */
-  --surface:        rgba(255, 255, 255, .72); /* cards/steps/perks */
-  --field-bg:       #ffffff;                  /* solid input background */
-  --panel-border:   #ffffff;                  /* waitlist panel edge */
-  --topbar-bg:      rgba(247, 243, 238, .5);
-  --topbar-bg-stuck:rgba(247, 243, 238, .68);
+  --btn-grad: linear-gradient(120deg, #d7c3dd 0%, #bdc1de 100%);  /* primary CTA — the money moment */
+  --btn-fg:   #14110f;
+
+  --field-bg:       #ffffff;
+  --panel-border:   #ffffff;
+  --topbar-bg:      rgba(246, 242, 240, .5);
+  --topbar-bg-stuck:rgba(246, 242, 240, .7);
   --topbar-border:  rgba(20, 17, 15, .08);
   --footer-bg:      #14110f;
-  --footer-fg:      #f7f3ee;
-  --grain-blend:    multiply;
-  --grain-opacity:  .09;
-  --wash-opacity:   1;
+  --footer-fg:      #f6f2f0;
+  --grain-opacity:  .13;
 
-  --radius:     16px;
-  --radius-lg:  26px;
+  --radius:     12px;      /* buttons */
+  --radius-lg:  16px;      /* cards & panels */
   --maxw:       1080px;
   --ease:       cubic-bezier(.2, .7, .2, 1);
 }
 
 /* ---------- Dark theme ---------- */
 :root[data-theme="dark"] {
-  --ink:        #f3eee6;   /* warm off-white — now the foreground */
+  --ink:        #f6f2f0;   /* warm off-white — foreground */
   --ink-soft:   #b6aca1;
   --ink-faint:  #897f74;
-  --cream:      #0b0b08;   /* near-black #090905-ish from the guideline */
-  --cream-deep: #1b1b15;
+  --cream:      #0b0b08;   /* near-black surface (paired with --ink for chips) */
+  --cream-deep: #17140f;   /* raised surface (toggle track) */
   --line:       #2f2e26;
-  --periwinkle: #7f9d6e;   /* sage green — the dark-mode primary from the guideline */
+  --hairline:   rgba(246, 242, 240, .16);
+  --card-bg:    rgba(255, 255, 255, .05);
+  --ring:       #9db98c;
+  --lilac:      #7f9d6e;
+  --periwinkle: #7f9d6e;   /* sage green — dark-mode accent */
+  --pink:       #7f9d6e;
 
-  --dash:           #463f34;
-  --surface:        rgba(255, 255, 255, .055);
-  --field-bg:       #211c17;
+  --btn-grad: linear-gradient(120deg, #2c3f34 0%, #303429 100%);  /* primary CTA — forest family */
+  --btn-fg:   #f6f2f0;
+
+  --field-bg:       #1b1712;
   --panel-border:   rgba(255, 255, 255, .10);
-  --topbar-bg:      rgba(11, 11, 8, .42);
-  --topbar-bg-stuck:rgba(11, 11, 8, .62);
+  --topbar-bg:      rgba(10, 9, 7, .44);
+  --topbar-bg-stuck:rgba(10, 9, 7, .62);
   --topbar-border:  rgba(255, 255, 255, .1);
-  --footer-bg:      #100d0a;
-  --footer-fg:      #f3eee6;
-  --grain-blend:    overlay;
-  --grain-opacity:  .07;
-  --wash-opacity:   .55;
+  --footer-bg:      #0b0906;
+  --footer-fg:      #f6f2f0;
+  --grain-opacity:  .1;
 }
 
 * { box-sizing: border-box; }
@@ -68,19 +78,18 @@
 html {
   scroll-behavior: smooth;
   overscroll-behavior-y: none;     /* stop the rubber-band bounce that revealed the bg above the navbar */
-  /* Brand gradient on the ROOT canvas — always painted behind everything, no
-     stacking-context surprises. LIGHT (fan): lavender top-left -> cream. */
+  /* Primary gradient (light/fan) — ZuZu brand stops on the #F6F2F0 anchor. */
   background:
-    radial-gradient(72% 66% at 6% 2%, rgba(170,177,226,.5) 0%, rgba(170,177,226,0) 60%),
-    linear-gradient(133deg, #B6BAE2 0%, #D0C2E0 24%, #ECCFDF 48%, #F2E7EC 72%, #F6F2F0 100%);
+    radial-gradient(68% 58% at 8% 4%, rgba(189,193,222,.55) 0%, rgba(189,193,222,0) 60%),
+    linear-gradient(133deg, #eed7e3 0%, #d7c3dd 26%, #bdc1de 50%, #f1e5e8 76%, #f6f2f0 100%);
   background-attachment: fixed;
 }
-/* DARK (artist): warm olive/brown glow -> near-black. */
+/* DARK (artist): warm brown + forest glow -> black. */
 html[data-theme="dark"] {
   background:
-    radial-gradient(74% 64% at 16% 0%, rgba(86,100,78,.5) 0%, rgba(86,100,78,0) 60%),
-    radial-gradient(60% 55% at 97% 4%, rgba(92,70,48,.46) 0%, rgba(92,70,48,0) 58%),
-    linear-gradient(155deg, #313630 0%, #302722 28%, #2b1920 54%, #16120d 82%, #0b0b08 100%);
+    radial-gradient(72% 60% at 14% 0%, rgba(58,42,32,.6) 0%, rgba(58,42,32,0) 60%),
+    radial-gradient(58% 54% at 96% 6%, rgba(48,52,41,.5) 0%, rgba(48,52,41,0) 58%),
+    linear-gradient(150deg, #3a2a20 0%, #232726 30%, #2b1b1c 56%, #303429 80%, #000000 100%);
   background-attachment: fixed;
 }
 
@@ -88,7 +97,7 @@ body {
   margin: 0;
   background: transparent;   /* let the root-canvas gradient show through */
   color: var(--ink);
-  font-family: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
+  font-family: var(--sans);
   font-size: clamp(16px, 1.05vw + 13px, 19px);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -96,7 +105,7 @@ body {
   overflow-x: hidden;
 }
 
-em { font-style: italic; }
+em { font-style: normal; font-weight: 500; }   /* brand: no italics — emphasis via Medium */
 
 /* Skip link — visually hidden until focused, so keyboard users can bypass the header. */
 .skip-link {
@@ -109,13 +118,13 @@ em { font-style: italic; }
   font-family: var(--mono);
   font-size: .8rem;
   padding: 9px 16px;
-  border-radius: 999px;
+  border-radius: 10px;
   text-decoration: none;
   transition: top .2s var(--ease);
 }
 .skip-link:focus { top: 12px; outline: 2px solid var(--cream); outline-offset: 2px; }
 
-/* ---------- Atmosphere: brand gradient + pixel mosaic + grain ---------- */
+/* ---------- Atmosphere: brand gradient + mosaic bands + grain ---------- */
 .atmosphere {
   position: fixed;
   inset: 0;
@@ -124,18 +133,27 @@ em { font-style: italic; }
   pointer-events: none;
 }
 
-/* Pixel-mosaic overlay (exact brand stops, downsampled, nearest-neighbor) for
-   the retro dither texture. Cheap — no blur, blend, or large raster. */
+/* Mosaic — the brand's "quantize the gradient into soft horizontal bands".
+   A stepped overlay in the mode's family; no raster, no blur (perf). */
+/* Bands hold a plateau, then ramp into the next one, so the blend reads as a
+   soft quantization rather than hard stripes. */
 .mosaic {
   position: absolute;
   inset: 0;
-  background: url("assets/grad-light.png") center / cover no-repeat;
-  image-rendering: pixelated;
-  opacity: .3;
+  opacity: .16;
+  background: linear-gradient(
+    to bottom,
+    #eed7e3 0 5%,  #e6cfdf 14% 19%, #d7c3dd 28% 33%, #c9c3de 42% 47%,
+    #bfc2de 56% 61%, #cbccdf 70% 74%, #ddd5e3 82% 86%, #f1e6e9 93% 96%,
+    #f6f2f0 100%);
 }
 :root[data-theme="dark"] .mosaic {
-  background-image: url("assets/grad-dark.png");
-  opacity: .35;
+  opacity: .18;
+  background: linear-gradient(
+    to bottom,
+    #3a2a20 0 5%,  #2f2620 14% 19%, #232726 28% 33%, #29201c 42% 47%,
+    #2b1b1c 56% 61%, #2a251d 70% 74%, #303429 82% 86%, #14120d 93% 96%,
+    #000000 100%);
 }
 
 /* Static tiled noise — replaces the costly live feTurbulence filter. */
@@ -176,7 +194,7 @@ section {
   backdrop-filter: blur(16px) saturate(1.15);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
   border: 1px solid var(--topbar-border);
-  border-radius: 22px;
+  border-radius: 16px;
   box-shadow: 0 14px 34px -20px rgba(20, 17, 15, .5);
   transition: background .3s var(--ease), box-shadow .3s var(--ease);
 }
@@ -187,7 +205,7 @@ section {
 .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--ink); }
 .brand__mark { width: 28px; height: 28px; }
 :root[data-theme="dark"] .brand__mark { filter: invert(1); }
-.brand__word { font-weight: 600; font-size: 1.28rem; letter-spacing: -.01em; }
+.brand__word { font-family: var(--mono); font-weight: 500; font-size: 1.15rem; letter-spacing: -.05em; }
 
 .topbar__right { display: flex; align-items: center; gap: 14px; }
 .rolebar__label { font-family: var(--mono); font-size: .76rem; color: var(--ink-soft); }
@@ -198,7 +216,7 @@ section {
   text-decoration: none;
   color: var(--ink);
   border: 1.5px solid var(--ink);
-  border-radius: 999px;
+  border-radius: 10px;
   padding: 8px 18px;
   transition: background .25s var(--ease), color .25s var(--ease);
 }
@@ -219,11 +237,11 @@ section {
   margin: 0 0 22px;
 }
 .hero__title {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(2.7rem, 7vw, 5.4rem);
-  line-height: .98;
-  letter-spacing: -.025em;
+  font-size: clamp(1.95rem, 5.2vw, 3.5rem);
+  line-height: 1.06;
+  letter-spacing: -.02em;
   margin: 0 0 26px;
 }
 .hero__title em { font-weight: 500; }
@@ -237,11 +255,11 @@ section {
 .hero__lede {
   grid-area: 1 / 1;
   max-width: 46ch;
-  font-size: clamp(1.05rem, 1.4vw, 1.3rem);
+  font-size: clamp(1.05rem, 1.4vw, 1.28rem);
   color: var(--ink-soft);
   margin: 0;
 }
-.hero__lede strong { color: var(--ink); font-weight: 600; }
+.hero__lede strong { color: var(--ink); font-weight: 500; }
 
 /* ---------- Waitlist form ---------- */
 .waitlist-form { max-width: 540px; }
@@ -251,18 +269,19 @@ section {
   display: flex;
   gap: 8px;
   background: var(--field-bg);
-  border: 1.5px dashed var(--dash);
-  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
   padding: 7px 7px 7px 8px;
   box-shadow: 0 10px 34px -22px rgba(20,17,15,.55);
   transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
 }
-.field:focus-within { border-style: solid; border-color: var(--ink); box-shadow: 0 14px 40px -22px rgba(20,17,15,.65); outline: 2px solid var(--ink); outline-offset: 2px; }
+.field:focus-within { border-color: var(--ink); box-shadow: 0 14px 40px -22px rgba(20,17,15,.65); outline: 2px solid var(--ink); outline-offset: 2px; }
 .field__input {
   flex: 1;
   border: 0;
   background: transparent;
-  font: inherit;
+  font-family: var(--sans);
+  font-size: 1rem;
   color: var(--ink);
   padding: 10px 14px;
   min-width: 0;
@@ -270,45 +289,40 @@ section {
 .field__input:focus { outline: none; }
 .field__input::placeholder { color: var(--ink-faint); }
 
+/* Primary CTA — the "money moment": grainy brand gradient, borderless, radius 12. */
 .btn {
   border: 0;
-  background: var(--ink);
-  color: var(--cream);
-  font: inherit;
-  font-weight: 600;
-  font-size: .96rem;
-  padding: 12px 22px;
-  border-radius: 999px;
+  background: var(--btn-grad);
+  color: var(--btn-fg);
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: .9rem;
+  letter-spacing: -.01em;
+  padding: 13px 24px;
+  border-radius: var(--radius);
   cursor: pointer;
   white-space: nowrap;
-  transition: transform .18s var(--ease), background .25s var(--ease);
+  transition: transform .18s var(--ease), filter .25s var(--ease);
 }
-.btn:hover { background: var(--pink); color: #fff; transform: translateY(-1px); }
+.btn:hover { filter: brightness(1.04) saturate(1.05); transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 .btn[disabled] { opacity: .6; cursor: progress; }
-
-.btn--ghost {
-  display: inline-block;
-  text-decoration: none;
-  background: transparent;
-  color: var(--ink);
-  border: 1.5px solid var(--ink);
-  padding: 13px 28px;
-}
-.btn--ghost:hover { background: var(--ink); color: var(--cream); }
 
 .waitlist-form__note { font-family: var(--mono); font-size: .74rem; line-height: 1.5; color: var(--ink-faint); margin: 14px 4px 0; }
 .waitlist-form__status { font-size: .92rem; margin: 12px 4px 0; min-height: 1.2em; font-weight: 500; }
 .waitlist-form__status.is-error { color: #b23b3b; }
 .waitlist-form__status.is-ok { color: #2f7d52; }
 
-/* ---------- Role switch (segmented toggle) ---------- */
+/* ---------- Role switch (segmented toggle) — brand pills ---------- */
+/* Primary pills: fully rounded (supporting pills are the radius-8 rectangles —
+   "only the shape differs"). Active is flat white with a 22% ink hairline;
+   at rest, an 8% fg fill under a 70% label. */
 .seg {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: var(--cream-deep);
-  border: 1.5px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  border: 0;
   border-radius: 999px;
   padding: 4px;
 }
@@ -321,21 +335,22 @@ section {
   cursor: pointer;
   padding: 8px 20px;
   border-radius: 999px;
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--ink-soft);
+  font-size: .78rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
   text-align: center;
   white-space: nowrap;
   transition: color .25s var(--ease);
 }
-.seg__btn[aria-pressed="true"] { color: var(--cream); }
+.seg__btn[aria-pressed="true"] { color: #14110f; }   /* dark label on the white active pill (both modes) */
 .seg__pill {
   position: absolute;
   top: 4px;
   bottom: 4px;
   left: 4px;
   width: calc(50% - 4px);
-  background: var(--ink);
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1.5px var(--ring);   /* app pattern: selection is the ring */
   border-radius: 999px;
   transition: transform .3s var(--ease);
 }
@@ -378,7 +393,7 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .problem { padding-block: clamp(30px, 5vw, 66px); }
 .section-kicker {
   font-family: var(--mono);
-  font-weight: 700;
+  font-weight: 500;
   font-size: .82rem;
   letter-spacing: .05em;
   text-transform: uppercase;
@@ -388,34 +403,34 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 /* Little blueprint tick before technical labels */
 .section-kicker::before { content: "▚ "; opacity: .8; }
 .problem__lead {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--mono);
   font-weight: 400;
-  font-size: clamp(1.5rem, 3.4vw, 2.5rem);
+  font-size: clamp(1.35rem, 3vw, 2.1rem);
   line-height: 1.22;
   letter-spacing: -.01em;
-  max-width: 30ch;
+  max-width: 32ch;
   margin: 0 0 8px;
 }
 .pullquote {
   margin: 0;
   max-width: 44ch;
   padding-left: 26px;
-  border-left: 2px dashed var(--ink);
-  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  border-left: 1px solid var(--hairline);
+  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
   line-height: 1.35;
   color: var(--ink-soft);
 }
-.pullquote strong { color: var(--ink); font-weight: 600; }
+.pullquote strong { color: var(--ink); font-weight: 500; }
 
 /* ---------- Shared section heads ---------- */
 .section-title {
-  font-family: "Fraunces", serif;
+  font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(1.9rem, 4vw, 3.1rem);
-  line-height: 1.04;
+  font-size: clamp(1.55rem, 3.4vw, 2.5rem);
+  line-height: 1.1;
   letter-spacing: -.02em;
   margin: 0 0 16px;
-  max-width: 18ch;
+  max-width: 20ch;
 }
 .section-sub { color: var(--ink-soft); max-width: 46ch; margin: 0 0 46px; font-size: 1.08rem; }
 
@@ -427,20 +442,20 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   margin: 44px 0;
 }
 .stat {
-  border-top: 2px dashed var(--ink);
+  border-top: 1px solid var(--hairline);
   padding-top: 16px;
 }
 .stat__num {
   display: block;
   font-family: var(--mono);
-  font-weight: 700;
-  font-size: clamp(2.1rem, 4.4vw, 3.1rem);
+  font-weight: 500;
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
   line-height: 1;
-  letter-spacing: -.03em;
+  letter-spacing: -.02em;
   margin-bottom: 14px;
 }
 .stat__cap { font-family: var(--mono); color: var(--ink-soft); font-size: .78rem; line-height: 1.5; }
-.stat__cap strong { color: var(--ink); font-weight: 600; }
+.stat__cap strong { color: var(--ink); font-weight: 500; }
 
 /* ---------- Fan perks ---------- */
 .perks {
@@ -450,15 +465,15 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   margin: 40px 0 36px;
 }
 .perk {
-  background: var(--surface);
-  border: 1.5px dashed var(--dash);
+  background: var(--card-bg);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   padding: clamp(20px, 2.4vw, 30px);
 }
 .perk__title {
-  font-family: "Fraunces", serif;
+  font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
   letter-spacing: -.01em;
   margin: 0 0 9px;
 }
@@ -472,27 +487,27 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   grid-template-columns: auto 1fr;
   gap: clamp(18px, 3vw, 38px);
   align-items: start;
-  background: var(--surface);
-  border: 1.5px dashed var(--dash);
+  background: var(--card-bg);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   padding: clamp(24px, 3vw, 36px);
 }
 .step__n {
   font-family: var(--mono);
   font-size: clamp(1.4rem, 2.6vw, 2rem);
-  font-weight: 700;
+  font-weight: 500;
   color: var(--periwinkle);
   line-height: 1;
 }
 .step__title {
-  font-family: "Fraunces", serif;
+  font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
   letter-spacing: -.01em;
   margin: 0 0 10px;
 }
 .step__body p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
-.step__body strong { color: var(--ink); font-weight: 600; }
+.step__body strong { color: var(--ink); font-weight: 500; }
 
 /* ---------- Differentiation ---------- */
 .versus { padding-block: clamp(30px, 4.5vw, 62px); }
@@ -503,8 +518,8 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   color: var(--ink-soft);
   font-size: clamp(1rem, 1.4vw, 1.15rem);
 }
-.versus__name { color: var(--ink); font-weight: 600; }
-.versus__list strong { color: var(--periwinkle); font-weight: 600; }
+.versus__name { color: var(--ink); font-weight: 500; }
+.versus__list strong { color: var(--periwinkle); font-weight: 500; }
 .versus__win {
   color: var(--ink);
   font-weight: 500;
@@ -515,24 +530,26 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 /* ---------- Waitlist section ---------- */
 .waitlist { padding-block: clamp(14px, 2vw, 28px) clamp(52px, 7vw, 92px); }
 .waitlist__inner {
-  /* Self-contained (more opaque) so it keeps its vibrancy even though the page
-     background behind it is now softer. */
+  /* The one gradient "primary" per screen — the money moment.
+     Brand primary family, borderless. */
   background:
-    linear-gradient(135deg, rgba(201,194,239,.85), rgba(243,205,218,.78) 48%, rgba(207,231,216,.82)),
-    #efe9f2;
-  border: 1.5px dashed var(--ink);
+    linear-gradient(135deg, #eed7e3 0%, #d7c3dd 46%, #bdc1de 100%),
+    #f1e5e8;
+  border: 0;
   border-radius: var(--radius-lg);
   padding: clamp(32px, 5vw, 64px);
-  box-shadow: 0 40px 90px -60px rgba(20,17,15,.6);
+  box-shadow: 0 40px 90px -60px rgba(20,17,15,.5);
 }
 :root[data-theme="dark"] .waitlist__inner {
-  background: linear-gradient(135deg, rgba(155,143,255,.16), rgba(243,205,218,.08) 48%, rgba(207,231,216,.10));
+  background:
+    linear-gradient(135deg, #2c3f34 0%, #303429 55%, #232726 100%),
+    #1d130d;
 }
 .waitlist__title {
-  font-family: "Fraunces", serif;
+  font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(2.2rem, 5vw, 3.6rem);
-  letter-spacing: -.025em;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  letter-spacing: -.02em;
   margin: 0 0 12px;
 }
 .waitlist__sub { color: var(--ink-soft); max-width: 42ch; margin: 0 0 32px; }
@@ -546,16 +563,16 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   text-align: center;
   padding: clamp(44px, 6vw, 70px) 20px;
 }
-.footer__brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 600; font-size: 1.25rem; margin-bottom: 18px; }
+.footer__brand { display: inline-flex; align-items: center; gap: 11px; font-family: var(--mono); font-weight: 500; font-size: 1.1rem; letter-spacing: -.05em; margin-bottom: 18px; }
 .footer__mark { width: 26px; height: 26px; filter: invert(1); }
 .footer__tagline {
-  font-family: "Fraunces", serif;
-  font-style: italic;
-  font-size: clamp(1.2rem, 2.4vw, 1.7rem);
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
   margin: 0 0 26px;
   color: var(--footer-fg);
 }
-.footer__legal { font-family: var(--mono); font-size: .72rem; letter-spacing: .02em; color: rgba(247,243,238,.55); margin: 0; }
+.footer__legal { font-family: var(--mono); font-size: .72rem; letter-spacing: .02em; color: rgba(246,242,240,.55); margin: 0; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {
@@ -567,6 +584,12 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   .step { grid-template-columns: 1fr; gap: 8px; }
   .pullquote { margin-left: 0; }
   .rolebar__label, .topbar__cta { display: none; }
+  /* DM Mono is wide — let the hero wrap naturally instead of forcing the desktop
+     breaks. Render the <br> as a space (not display:none, which would butt the
+     two words together). */
+  .hero__break { content: " "; display: inline; font-size: 0; }
+  .hero__break::after { content: " "; font-size: 1rem; }
+  .hero__title { font-size: clamp(1.6rem, 7.4vw, 2.2rem); }
   .seg__btn { padding: 8px 17px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
   .field { flex-wrap: wrap; border-radius: var(--radius-lg); }
   .field__input { flex-basis: 100%; }
