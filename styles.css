@@ -226,7 +226,7 @@ section {
 .how, .waitlist { scroll-margin-top: 88px; }
 
 /* ---------- Hero ---------- */
-.hero { padding-top: clamp(28px, 5.5vw, 64px); padding-bottom: clamp(34px, 6vw, 72px); }
+.hero { padding-top: clamp(56px, 9vw, 116px); padding-bottom: clamp(34px, 6vw, 72px); }
 .eyebrow {
   font-family: var(--mono);
   font-size: .76rem;
