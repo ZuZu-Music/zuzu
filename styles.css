@@ -78,19 +78,11 @@
 html {
   scroll-behavior: smooth;
   overscroll-behavior-y: none;     /* stop the rubber-band bounce that revealed the bg above the navbar */
-  /* Primary gradient (light/fan) — ZuZu brand stops on the #F6F2F0 anchor. */
-  background:
-    radial-gradient(68% 58% at 8% 4%, rgba(189,193,222,.55) 0%, rgba(189,193,222,0) 60%),
-    linear-gradient(133deg, #eed7e3 0%, #d7c3dd 26%, #bdc1de 50%, #f1e5e8 76%, #f6f2f0 100%);
-  background-attachment: fixed;
-}
-/* DARK (artist): warm brown + forest glow -> black. */
-html[data-theme="dark"] {
-  background:
-    radial-gradient(72% 60% at 14% 0%, rgba(58,42,32,.6) 0%, rgba(58,42,32,0) 60%),
-    radial-gradient(58% 54% at 96% 6%, rgba(48,52,41,.5) 0%, rgba(48,52,41,0) 58%),
-    linear-gradient(150deg, #3a2a20 0%, #232726 30%, #2b1b1c 56%, #303429 80%, #000000 100%);
-  background-attachment: fixed;
+  /* Flat anchor only. The gradient itself lives on the already-fixed .atmosphere
+     layer below — background-attachment:fixed forces a full repaint of the
+     gradient on every scroll frame, which is the single worst scroll cost on a
+     page like this. A fixed element composites once and then just stays put. */
+  background: var(--cream);
 }
 
 body {
@@ -131,6 +123,17 @@ em { font-style: normal; font-weight: 500; }   /* brand: no italics — emphasis
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
+  /* Primary gradient (light/fan) — ZuZu brand stops on the #F6F2F0 anchor. */
+  background:
+    radial-gradient(68% 58% at 8% 4%, rgba(189,193,222,.55) 0%, rgba(189,193,222,0) 60%),
+    linear-gradient(133deg, #eed7e3 0%, #d7c3dd 26%, #bdc1de 50%, #f1e5e8 76%, #f6f2f0 100%);
+}
+/* DARK (artist): warm brown + forest glow -> black. */
+:root[data-theme="dark"] .atmosphere {
+  background:
+    radial-gradient(72% 60% at 14% 0%, rgba(58,42,32,.6) 0%, rgba(58,42,32,0) 60%),
+    radial-gradient(58% 54% at 96% 6%, rgba(48,52,41,.5) 0%, rgba(48,52,41,0) 58%),
+    linear-gradient(150deg, #3a2a20 0%, #232726 30%, #2b1b1c 56%, #303429 80%, #000000 100%);
 }
 
 /* Mosaic — the brand's "quantize the gradient into soft horizontal bands".
@@ -590,23 +593,28 @@ body[data-role="fan"]    .hero__ledes .r-artist {
    Driven by IntersectionObserver (no scroll listener, no rAF) and limited to
    opacity/transform so it stays on the compositor. The hidden state is gated on
    the .js-reveal class that script.js adds, so with JS off nothing is hidden. */
+/* No will-change and no scale, deliberately:
+   - will-change in the resting state pins a compositor layer for every target
+     from first paint (15 of them here), on a page that already pays for a fixed
+     background and a backdrop-filtered topbar.
+   - scaling a text block forces the glyphs to re-rasterise on every frame of the
+     transition. translate alone stays on the compositor. */
 .js-reveal [data-reveal] {
   opacity: 0;
-  transform: translateY(26px);
-  transition: opacity .4s var(--ease), transform .4s var(--ease);
-  will-change: opacity, transform;
+  transform: translateY(38px);
+  transition: opacity .72s var(--ease), transform .72s var(--ease);
+  transition-delay: .1s;              /* a beat after it enters, before it moves */
 }
 .js-reveal [data-reveal].is-in {
   opacity: 1;
   transform: none;
-  will-change: auto;        /* release the layer once settled */
 }
 /* Gentle stagger within a group — capped so nothing waits long. */
-.js-reveal [data-reveal]:nth-child(2) { transition-delay: .06s; }
-.js-reveal [data-reveal]:nth-child(3) { transition-delay: .12s; }
-.js-reveal [data-reveal]:nth-child(4) { transition-delay: .18s; }
-.js-reveal [data-reveal]:nth-child(5) { transition-delay: .24s; }
-.js-reveal [data-reveal]:nth-child(6) { transition-delay: .30s; }
+.js-reveal [data-reveal]:nth-child(2) { transition-delay: .19s; }
+.js-reveal [data-reveal]:nth-child(3) { transition-delay: .28s; }
+.js-reveal [data-reveal]:nth-child(4) { transition-delay: .37s; }
+.js-reveal [data-reveal]:nth-child(5) { transition-delay: .46s; }
+.js-reveal [data-reveal]:nth-child(6) { transition-delay: .55s; }
 
 /* ---------- Motion preference ---------- */
 @media (prefers-reduced-motion: reduce) {
