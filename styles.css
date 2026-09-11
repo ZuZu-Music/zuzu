@@ -509,24 +509,6 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .step__body p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
 .step__body strong { color: var(--ink); font-weight: 500; }
 
-/* ---------- Differentiation ---------- */
-.versus { padding-block: clamp(30px, 4.5vw, 62px); }
-.versus__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-width: 760px; }
-.versus__list li {
-  padding: 18px 4px;
-  border-bottom: 1px solid var(--line);
-  color: var(--ink-soft);
-  font-size: clamp(1rem, 1.4vw, 1.15rem);
-}
-.versus__name { color: var(--ink); font-weight: 500; }
-.versus__list strong { color: var(--periwinkle); font-weight: 500; }
-.versus__win {
-  color: var(--ink);
-  font-weight: 500;
-  border-bottom: 0;
-}
-.versus__win .versus__name { color: var(--periwinkle); }
-
 /* ---------- Waitlist section ---------- */
 .waitlist { padding-block: clamp(14px, 2vw, 28px) clamp(52px, 7vw, 92px); }
 .waitlist__inner {
@@ -565,13 +547,20 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 }
 .footer__brand { display: inline-flex; align-items: center; gap: 11px; font-family: var(--mono); font-weight: 500; font-size: 1.1rem; letter-spacing: -.05em; margin-bottom: 18px; }
 .footer__mark { width: 26px; height: 26px; filter: invert(1); }
-.footer__tagline {
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
-  margin: 0 0 26px;
-  color: var(--footer-fg);
+.footer__links { margin: 0 0 20px; display: flex; gap: 20px; justify-content: center; }
+.footer__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: rgba(246,242,240,.78);
+  text-decoration: none;
+  transition: color .2s var(--ease);
 }
+.footer__links a:hover { color: var(--footer-fg); }
+.footer__links a:focus-visible { outline: 2px solid var(--footer-fg); outline-offset: 4px; border-radius: 4px; }
+.footer__icon { width: 16px; height: 16px; flex: none; }
 .footer__legal { font-family: var(--mono); font-size: .72rem; letter-spacing: .02em; color: rgba(246,242,240,.55); margin: 0; }
 
 /* ---------- Responsive ---------- */
@@ -596,10 +585,35 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   .btn { flex: 1; }
 }
 
+/* ---------- Entrance motion ----------
+   Brand guide: motion "settles within 400 ms" and respects prefers-reduced-motion.
+   Driven by IntersectionObserver (no scroll listener, no rAF) and limited to
+   opacity/transform so it stays on the compositor. The hidden state is gated on
+   the .js-reveal class that script.js adds, so with JS off nothing is hidden. */
+.js-reveal [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .38s var(--ease), transform .38s var(--ease);
+  will-change: opacity, transform;
+}
+.js-reveal [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+  will-change: auto;        /* release the layer once settled */
+}
+/* Gentle stagger within a group — capped so nothing waits long. */
+.js-reveal [data-reveal]:nth-child(2) { transition-delay: .06s; }
+.js-reveal [data-reveal]:nth-child(3) { transition-delay: .12s; }
+.js-reveal [data-reveal]:nth-child(4) { transition-delay: .18s; }
+.js-reveal [data-reveal]:nth-child(5) { transition-delay: .24s; }
+.js-reveal [data-reveal]:nth-child(6) { transition-delay: .30s; }
+
 /* ---------- Motion preference ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; }
+  /* Critical: without this the reveal state would leave content stuck at opacity 0. */
+  .js-reveal [data-reveal] { opacity: 1; transform: none; }
 }
 
 /* ====================================================================
@@ -608,7 +622,6 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .hero,
 .problem,
 .how,
-.versus,
 .waitlist__inner { text-align: center; }
 
 /* constrained text blocks keep their max-width but now center horizontally */
@@ -617,7 +630,6 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .section-title,
 .section-sub,
 .waitlist__sub,
-.versus__list,
 .step__body p,
 .pullquote { margin-inline: auto; }
 

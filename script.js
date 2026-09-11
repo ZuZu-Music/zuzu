@@ -16,12 +16,12 @@ const isConfigured = !WAITLIST_ENDPOINT.includes("REPLACE_WITH_YOUR_FORM_ID");
 const COPY = {
   artist: {
     cta: "Become a founding artist",
-    note: "Free. Founding artists get priority onboarding at launch and first pick of their @handle.",
+    note: "Free. Priority onboarding at launch, and first pick of your @handle.",
     success: "You’re on the founding-artist list. We’ll bring you in first when we open the doors.",
   },
   fan: {
     cta: "Join the waitlist",
-    note: "Free. Get first access at launch — and reserve your fan handle before anyone else.",
+    note: "Free. First access at launch, and your handle before anyone else.",
     success: "You’re in. We’ll let you know the moment there’s a door to open.",
   },
 };
@@ -56,6 +56,10 @@ function applyRole(role) {
   // Swap the hero note.
   const note = document.querySelector("[data-note]");
   if (note) note.textContent = COPY[role].note;
+
+  // The other role's content was display:none, so it never intersected and is
+  // still hidden at opacity 0. Re-observe it now that it has layout.
+  observeReveals();
 }
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -64,9 +68,14 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 function switchRole(role) {
   if (role === getRole()) return;
   if (document.startViewTransition && !prefersReducedMotion) {
-    document.startViewTransition(() => applyRole(role));
+    const transition = document.startViewTransition(() => applyRole(role));
+    // Measure only once the new snapshot is live, so rects are the real ones.
+    if (transition && transition.updateCallbackDone) {
+      transition.updateCallbackDone.then(revealInView).catch(() => {});
+    }
   } else {
     applyRole(role);
+    revealInView();
   }
 }
 
@@ -160,6 +169,51 @@ if (topbar) {
   const onScroll = () => topbar.classList.toggle("is-stuck", window.scrollY > 6);
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+// ---- Entrance reveals ------------------------------------------------------
+// One-shot IntersectionObserver: no scroll listener, no rAF, and each element is
+// unobserved once it lands, so there is no ongoing work while scrolling.
+let revealObserver = null;
+
+function observeReveals() {
+  if (!revealObserver) return;
+  document.querySelectorAll("[data-reveal]:not(.is-in)").forEach((el) => revealObserver.observe(el));
+}
+
+// After a role switch the other view's blocks were display:none, so they never
+// intersected and are still at opacity 0 — including ones scrolled past, which
+// would leave content invisible until you scrolled back up. Show anything at or
+// above the fold outright: the page has just crossfaded, and a second fade on
+// top of that reads as a glitch.
+function revealInView() {
+  if (!revealObserver) return;
+  const fold = window.innerHeight;
+  document.querySelectorAll("[data-reveal]:not(.is-in)").forEach((el) => {
+    if (el.offsetParent === null) return;               // still hidden by the role switch
+    if (el.getBoundingClientRect().top < fold) {
+      el.classList.add("is-in");
+      revealObserver.unobserve(el);
+    }
+  });
+}
+
+if (!prefersReducedMotion && "IntersectionObserver" in window) {
+  // Only hide things once we know JS is running and can reveal them again.
+  document.documentElement.classList.add("js-reveal");
+
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        revealObserver.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+  );
+
+  observeReveals();
 }
 
 // Init.

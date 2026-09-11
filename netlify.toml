@@ -1,0 +1,58 @@
+# ZuZu — Netlify config for the apex (zuzu.music)
+#
+# Shape: the marketing site owns the apex and serves "/". ZuZu Studio (the
+# Next.js app in ~/zuzu-app) is proxied in at "/studio" so both live under one
+# domain and one certificate, with the two codebases deploying independently.
+#
+# NOT ACTIVE YET. This only takes effect once the apex DNS points at Netlify.
+# Until then the marketing site continues to serve from GitHub Pages.
+#
+# Prerequisites before switching the apex over:
+#   1. Set `basePath: '/studio'` in ~/zuzu-app/next.config.ts, and deploy that
+#      app as its own Netlify site. Put its URL in STUDIO_ORIGIN below.
+#   2. Remove the custom domain from GitHub Pages (delete the CNAME file), or
+#      Pages will 301 back to zuzu.music and create a redirect loop.
+#   3. Point the apex A records / ALIAS at Netlify instead of GitHub Pages.
+
+[build]
+  # Static site — nothing to compile, publish the repo root as-is.
+  publish = "."
+  command = ""
+
+# ---------------------------------------------------------------------------
+# /studio  ->  ZuZu Studio (Next.js). status = 200 makes this a proxy rewrite,
+# so the URL stays zuzu.music/studio rather than redirecting off-domain.
+# Replace STUDIO_ORIGIN with the Studio site's Netlify URL.
+# ---------------------------------------------------------------------------
+[[redirects]]
+  from = "/studio"
+  to = "https://STUDIO_ORIGIN.netlify.app/studio"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/studio/*"
+  to = "https://STUDIO_ORIGIN.netlify.app/studio/:splat"
+  status = 200
+  force = true
+
+# ---------------------------------------------------------------------------
+# Security + caching headers. The marketing site is fully static, so assets are
+# safe to cache hard; HTML stays revalidated so copy edits go live on push.
+# ---------------------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
