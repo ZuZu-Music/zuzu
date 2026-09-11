@@ -210,7 +210,9 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
         revealObserver.unobserve(entry.target);
       });
     },
-    { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+    // Fire once the element is properly inside the viewport, not as its top edge
+    // grazes the fold — otherwise the 400ms settle finishes before you see it.
+    { rootMargin: "0px 0px -18% 0px", threshold: 0 }
   );
 
   observeReveals();
