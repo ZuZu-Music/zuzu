@@ -206,6 +206,11 @@ section {
   box-shadow: 0 18px 42px -20px rgba(20, 17, 15, .6);
 }
 .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--ink); }
+/* Touch target padded out invisibly: inset on a pseudo-element rather than real
+   padding, so the topbar keeps its height (the hero's min-height calc depends
+   on it) while the tappable area clears 44px. */
+.brand { position: relative; }
+.brand::after { content: ""; position: absolute; inset: -8px -10px; }
 .brand__mark { width: 28px; height: 28px; }
 :root[data-theme="dark"] .brand__mark { filter: invert(1); }
 .brand__word { font-family: var(--mono); font-weight: 500; font-size: 1.15rem; letter-spacing: -.05em; }
@@ -237,8 +242,14 @@ section {
 .hero {
   min-height: calc(100vh - 84px);
   min-height: calc(100svh - 84px);
-  padding-top: clamp(56px, 9vw, 116px);
-  padding-bottom: clamp(48px, 8vw, 96px);
+  /* Centre the content in that box rather than letting it sit at the top with
+     all the slack below it. Self-adjusting: on a tall screen it drops further,
+     on a short one the content simply grows past the min-height and flows. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: clamp(40px, 6vw, 80px);
+  padding-bottom: clamp(40px, 6vw, 80px);
 }
 .eyebrow {
   font-family: var(--mono);
@@ -294,7 +305,8 @@ section {
   border: 0;
   background: transparent;
   font-family: var(--sans);
-  font-size: 1rem;
+  font-size: 1rem;          /* >=16px or iOS zooms the page on focus */
+  min-height: 44px;         /* WCAG 2.5.5 touch target */
   color: var(--ink);
   padding: 10px 14px;
   min-width: 0;
@@ -576,6 +588,8 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .footer__links a:hover { color: var(--footer-fg); }
 .footer__links a:focus-visible { outline: 2px solid var(--footer-fg); outline-offset: 4px; border-radius: 4px; }
 .footer__icon { width: 16px; height: 16px; flex: none; }
+.footer__links a { position: relative; }
+.footer__links a::after { content: ""; position: absolute; inset: -13px -12px; }
 .footer__legal { font-family: var(--mono); font-size: .72rem; letter-spacing: .02em; color: rgba(246,242,240,.55); margin: 0; }
 
 /* ---------- Responsive ---------- */
