@@ -229,7 +229,17 @@ section {
 .how, .waitlist { scroll-margin-top: 88px; }
 
 /* ---------- Hero ---------- */
-.hero { padding-top: clamp(56px, 9vw, 116px); padding-bottom: clamp(34px, 6vw, 72px); }
+/* The hero owns the first screen, so the next section's kicker can never peek
+   above the fold — padding alone can't guarantee that, since it depends on the
+   visitor's viewport height. 84px is the sticky topbar's footprint. svh (not vh)
+   so mobile browser chrome doesn't push content off-screen; the vh line is the
+   fallback for anything that doesn't know svh. */
+.hero {
+  min-height: calc(100vh - 84px);
+  min-height: calc(100svh - 84px);
+  padding-top: clamp(56px, 9vw, 116px);
+  padding-bottom: clamp(48px, 8vw, 96px);
+}
 .eyebrow {
   font-family: var(--mono);
   font-size: .76rem;
@@ -393,7 +403,9 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 }
 
 /* ---------- Problem ---------- */
-.problem { padding-block: clamp(30px, 5vw, 66px); }
+/* Extra top padding so the section still lands with air beneath the fold, not
+   flush against it, once you start scrolling. */
+.problem { padding-block: clamp(44px, 7vw, 104px) clamp(30px, 5vw, 66px); }
 .section-kicker {
   font-family: var(--mono);
   font-weight: 500;
