@@ -3,14 +3,16 @@
    ========================================================= */
 
 // ---------------------------------------------------------------------------
-// 1. WAITLIST ENDPOINT — replace with your own form-service URL before launch.
-//    Create a free form at https://formspree.io (or Getform / Tally) and paste
-//    its endpoint below. Submissions arrive in your inbox + are exportable.
-//    Until this is set to a real value, the form runs in DEMO mode and just
-//    shows the success state without sending anything.
+// 1. WAITLIST — signups go straight into our own Supabase, not a third party.
+//    The table is INSERT-only for anonymous visitors: there is no select policy
+//    and no select grant, so this publishable key cannot read the list back.
+//    Publishable keys are designed to ship in client code; the protection is the
+//    row-level security policy, not the secrecy of this string.
 // ---------------------------------------------------------------------------
-const WAITLIST_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID";
-const isConfigured = !WAITLIST_ENDPOINT.includes("REPLACE_WITH_YOUR_FORM_ID");
+const SUPABASE_URL = "https://hrmofecwgvzkgqmmctly.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ONBvfglyMxEgcDTXJDnyZw_UZxpb0X1";
+const WAITLIST_ENDPOINT = SUPABASE_URL + "/rest/v1/waitlist";
+const isConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 
 // Per-role copy. Changing the toggle rewrites these across the page.
 const COPY = {
@@ -112,10 +114,20 @@ function setupForm(form) {
       if (isConfigured) {
         const res = await fetch(WAITLIST_ENDPOINT, {
           method: "POST",
-          headers: { Accept: "application/json" },
-          body: toFormData({ email, role, source: "zuzu-waitlist" }),
+          headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_PUBLISHABLE_KEY,
+            Authorization: "Bearer " + SUPABASE_PUBLISHABLE_KEY,
+            // Required: without it PostgREST tries to return the new row, which
+            // needs a SELECT grant we deliberately do not give anon.
+            Prefer: "return=minimal",
+          },
+          body: JSON.stringify({ email, role, source: "zuzu-waitlist" }),
         });
-        if (!res.ok) throw new Error("Request failed");
+
+        // 409 = the unique index caught a repeat signup. That is a success from
+        // the visitor's point of view, not an error.
+        if (!res.ok && res.status !== 409) throw new Error("HTTP " + res.status);
       } else {
         await wait(600); // DEMO mode — no endpoint configured yet.
       }
@@ -143,12 +155,6 @@ function setStatus(el, msg, kind) {
 
 function isValidEmail(v) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-}
-
-function toFormData(obj) {
-  const fd = new FormData();
-  Object.entries(obj).forEach(([k, v]) => fd.append(k, v));
-  return fd;
 }
 
 function wait(ms) {
