@@ -32,6 +32,7 @@
   --hero-grad: linear-gradient(to bottom right, #BDC1DE 0%, #D7C3DD 33%, #F1E5E8 67%, #FFFFFF 100%);
   --btn-grad:  linear-gradient(to bottom right, #B7BEF8, #E3BAEF, #F9E2E8);
   --btn-fg:   var(--ink);
+  --ring-solid: #E3BAEF;
   --ok:       #2F6B45;
   --err:      #B8261C;
   --shadow:   0 28px 60px -36px rgba(23, 19, 15, .42);
@@ -61,6 +62,7 @@
   --hero-grad: linear-gradient(to bottom right, #17130F 0%, #2B1B1C 33%, #3A2A20 67%, #303429 100%);
   --btn-grad:  linear-gradient(to bottom right, #7B4348, #8E5732, #696D61);
   --btn-fg:   #FFFFFF;
+  --ring-solid: #8E5732;
   --ok:       #9FD9B4;
   --err:      #F29A91;
   --shadow:   0 28px 60px -30px rgba(0, 0, 0, .75);
@@ -730,3 +732,127 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   .panel:not([hidden]) .panel__shot.is-flown { animation: none; opacity: 1; filter: none; transform: none; }
   .js-fly [data-fly] { opacity: 1; transform: none; }
 }
+
+/* ---------- The artist gap: how it works and the calculator ---------- */
+/* How ZuZu fixes it: a compact row under the stats, same three columns,
+   a hairline instead of the stats' Sage rule so the two rows read as
+   problem and answer. */
+.fixes {
+  list-style: none; margin: 28px 0 0; padding: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px;
+}
+@media (min-width: 760px) { .fixes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
+.fix { border-top: 1px solid var(--hairline); padding-top: 14px; }
+.fix__n { display: block; font-family: var(--mono); font-weight: 500; font-size: .75rem; color: var(--label); margin-bottom: 8px; }
+.fix__title { font-family: var(--sans); font-weight: 500; font-size: 1.0625rem; margin: 0 0 4px; }
+.fix p { margin: 0; font-size: .9375rem; line-height: 1.5; color: var(--fg-70); }
+
+.calc {
+  margin-top: clamp(36px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 48px);
+  padding: clamp(24px, 4vw, 44px);
+  border-radius: var(--radius);
+  background: var(--rest);
+  border: 1px solid var(--hairline);
+}
+@media (min-width: 860px) {
+  .calc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; }
+}
+.calc__title {
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(1.25rem, 2vw, 1.6rem); line-height: 1.25; letter-spacing: -.015em;
+  margin: 0 0 24px;
+}
+.calc__source { border: 0; margin: 0 0 22px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.calc__legend { float: left; margin-right: 6px; font-size: .9375rem; color: var(--fg-70); }
+
+/* Pills: at rest a soft fill and the label at 70; selected, a white pill
+   with a 1.5px ring in the mode's button colours (V1.3 p17). */
+.pill { position: relative; cursor: pointer; }
+.pill input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.pill span {
+  display: inline-flex; align-items: center;
+  min-height: 40px; padding: 8px 16px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  background: var(--rest);
+  font-size: .875rem; font-weight: 500;
+  color: var(--fg-70);
+  transition: color .2s var(--ease);
+}
+.pill:hover span { color: var(--fg); }
+.pill input:checked + span {
+  color: var(--ink);
+  background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, var(--btn-grad) border-box;
+}
+.pill input:focus-visible + span { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+.calc__field-label { display: block; font-size: .9375rem; color: var(--fg-70); margin: 0 0 10px; }
+.calc__field-label output { color: var(--fg); font-weight: 500; }
+/* A field with no outline (house rule): the soft fill of the mode. */
+.calc__input {
+  display: block; width: 100%;
+  border: 0; border-radius: var(--radius);
+  background: var(--rest);
+  color: var(--fg);
+  font-family: var(--mono); font-weight: 500; font-size: 1.25rem;
+  min-height: 52px; padding: 10px 16px;
+  margin: 0 0 26px;
+}
+.calc__input:focus { outline: none; }
+.calc__input:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+/* The slider: the filled part is the button gradient, the rest the soft
+   fill; a white thumb with the ring. --p is set by script.js. */
+.calc__range {
+  -webkit-appearance: none; appearance: none;
+  display: block; width: 100%; height: 28px; margin: 0;
+  background: transparent; cursor: pointer;
+  --p: 11%;
+}
+.calc__range::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 999px;
+  background: var(--btn-grad) 0 0 / var(--p) 100% no-repeat, var(--rest);
+}
+.calc__range::-moz-range-track { height: 6px; border-radius: 999px; background: var(--rest); }
+.calc__range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--btn-grad); }
+.calc__range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 24px; height: 24px; margin-top: -9px;
+  border-radius: 50%; border: 0;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 1.5px var(--ring-solid), 0 4px 14px rgba(0, 0, 0, .35);
+}
+.calc__range::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%; border: 0;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 1.5px var(--ring-solid), 0 4px 14px rgba(0, 0, 0, .35);
+}
+.calc__range:focus { outline: none; }
+.calc__range:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; border-radius: 999px; }
+.calc__ticks { display: flex; justify-content: space-between; margin-top: 6px; font-family: var(--mono); font-size: .75rem; color: var(--fg-60); }
+
+.calc__out { font-variant-numeric: tabular-nums; }
+.calc__people { margin: 0 0 6px; font-size: 1.0625rem; color: var(--fg-70); }
+.calc__people span { color: var(--fg); font-weight: 500; }
+/* Us vs them: two rows, the bar lengths to scale against the larger. */
+.cmp { display: grid; gap: 18px; margin: 4px 0 18px; }
+.cmp__name { margin: 0 0 4px; font-family: var(--mono); font-weight: 500; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--label); }
+.cmp__amt { margin: 0 0 8px; font-family: var(--mono); font-weight: 500; letter-spacing: -.02em; line-height: 1.05; }
+.cmp__row--us .cmp__amt { font-size: clamp(2.4rem, 5.4vw, 3.6rem); color: var(--fg); }
+.cmp__row--them .cmp__amt { font-size: clamp(1.4rem, 2.6vw, 1.9rem); color: var(--fg-70); }
+.cmp__unit { font-size: 1rem; letter-spacing: 0; color: var(--fg-70); }
+.cmp__bar { height: 8px; border-radius: 999px; background: var(--rest); overflow: hidden; }
+.cmp__bar i { display: block; height: 100%; width: 0; border-radius: inherit; transition: width .6s var(--fly); }
+.cmp__row--us .cmp__bar i { background: var(--btn-grad); }
+.cmp__row--them .cmp__bar i { background: var(--fg-60); }
+.calc__x { margin: 0 0 6px; font-family: var(--mono); font-weight: 500; font-size: 1.125rem; color: var(--fg); }
+.calc__year { margin: 0 0 18px; font-size: .9375rem; color: var(--fg-70); }
+.calc__year span { color: var(--fg); font-weight: 500; }
+.calc__note { margin: 0; font-size: .875rem; line-height: 1.5; color: var(--fg-60); max-width: 44ch; }
+
+/* The gap headline: wider, one sentence a line on wide screens. */
+.gap__title { max-width: none; }
+@media (min-width: 900px) { .gap__title span { display: block; } }

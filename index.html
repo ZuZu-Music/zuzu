@@ -53,7 +53,7 @@
 
   <!-- The direct line screen is the hero on every width: in front of the artist profile on wide screens, peeking under the form on phones. -->
   <link rel="preload" as="image" href="assets/shot-line.webp" />
-  <link rel="stylesheet" href="styles.css?v=202610142139" />
+  <link rel="stylesheet" href="styles.css?v=202610142158" />
 </head>
 <body data-role="fan">
   <a class="skip-link" href="#top">Skip to content</a>
@@ -219,11 +219,13 @@
       </div>
     </section>
 
-    <!-- THE GAP (artists) -->
-    <section class="gap section r-artist" aria-labelledby="gap-title">
+    <!-- THE GAP, AND HOW ZUZU CLOSES IT (artists): the problem, the three
+         steps, then a calculator that turns their own audience into a
+         monthly figure at $1 a person. -->
+    <section class="gap section r-artist" id="how-artists" aria-labelledby="gap-title">
       <div class="wrap">
         <p class="label">The gap nobody built for</p>
-        <h2 class="gap__title" id="gap-title">Fans spend billions on the artists they love. Almost none of it reaches the artist.</h2>
+        <h2 class="gap__title" id="gap-title"><span>Fans spend billions on the artists they love.</span> <span>Almost none of it reaches the artist.</span></h2>
         <div class="stats">
           <div class="stat" data-reveal>
             <span class="stat__num">97%</span>
@@ -238,10 +240,44 @@
             <span class="stat__cap">of listeners drive <strong>20% of your streams</strong></span>
           </div>
         </div>
-        <p class="lead gap__sub">
-          Your biggest fans are already there. You just can’t see them, reach them, or keep them.
-          <strong>That’s what ZuZu fixes.</strong>
-        </p>
+        <!-- The calculator. Plain arithmetic in the browser: their number,
+             times the share who join, times $1 a month each. Nothing is sent
+             anywhere. -->
+        <div class="calc" data-calc data-reveal>
+          <div class="calc__in">
+            <p class="label">Your numbers</p>
+            <h3 class="calc__title">What could your community pay you?</h3>
+            <fieldset class="calc__source">
+              <legend class="calc__legend">Start from your</legend>
+              <label class="pill"><input type="radio" name="calc-source" value="listeners" checked /><span>Monthly listeners</span></label>
+              <label class="pill"><input type="radio" name="calc-source" value="followers" /><span>Followers</span></label>
+            </fieldset>
+            <label class="calc__field-label" for="calc-n" data-calc-noun>How many monthly listeners do you have?</label>
+            <input class="calc__input" id="calc-n" type="text" inputmode="numeric" autocomplete="off" value="20,000" />
+            <label class="calc__field-label" for="calc-rate">If <output data-calc-rate-out for="calc-rate">2%</output> of them join</label>
+            <input class="calc__range" id="calc-rate" type="range" min="0.5" max="5" step="0.5" value="2" />
+            <div class="calc__ticks" aria-hidden="true"><span>0.5%</span><span>5%</span></div>
+          </div>
+          <!-- Us vs them: the same fans, two ways of paying you. -->
+          <div class="calc__out" aria-live="polite">
+            <p class="calc__people"><span data-calc-people>400</span> people join</p>
+            <div class="cmp">
+              <div class="cmp__row cmp__row--us">
+                <p class="cmp__name">On ZuZu</p>
+                <p class="cmp__amt"><span data-calc-month>$400</span> <span class="cmp__unit">a month</span></p>
+                <div class="cmp__bar"><i data-calc-bar-us></i></div>
+              </div>
+              <div class="cmp__row cmp__row--them">
+                <p class="cmp__name">The same fans on major streaming apps</p>
+                <p class="cmp__amt"><span data-calc-stream>$48</span> <span class="cmp__unit">a month</span></p>
+                <div class="cmp__bar"><i data-calc-bar-them></i></div>
+              </div>
+            </div>
+            <p class="calc__x"><span data-calc-x>8×</span> more from the same fans.</p>
+            <p class="calc__year"><span data-calc-year>$4,800</span> a year on ZuZu, <span data-calc-stream-year>$576</span> on streaming.</p>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -330,40 +366,60 @@
       </div>
     </section>
 
-    <!-- HOW IT WORKS -->
-    <section class="how section" id="how" aria-labelledby="how-title">
+    <!-- HOW IT WORKS (artists), after the Studio demo. -->
+    <section class="how section r-artist" id="how-artists-steps" aria-labelledby="how-artist-title">
       <div class="wrap">
         <p class="label">How it works</p>
-        <h2 class="section-title" id="how-title">
-          <span class="r-artist">Listeners become fans you know, reach, and keep.</span>
-          <span class="r-fan">Three steps to closer than a follow.</span>
-        </h2>
+        <h2 class="section-title" id="how-artist-title">Listeners become fans you know, reach, and keep.</h2>
+        <p class="lead gap__sub">
+          Your biggest fans are already there. You just can’t see them, reach them, or keep them.
+          <strong>That’s what ZuZu fixes.</strong>
+        </p>
+        <ol class="fixes" aria-label="How ZuZu fixes it">
+          <li class="fix" data-reveal>
+            <span class="fix__n">01</span>
+            <h3 class="fix__title">Get discovered</h3>
+            <p>New fans find you by the sound, not by an algorithm.</p>
+          </li>
+          <li class="fix" data-reveal>
+            <span class="fix__n">02</span>
+            <h3 class="fix__title">Get closer</h3>
+            <p>Your biggest fans back you directly, for early drops and the process behind them.</p>
+          </li>
+          <li class="fix" data-reveal>
+            <span class="fix__n">03</span>
+            <h3 class="fix__title">Own the relationship</h3>
+            <p>Fans choose to be known to you: name, contact, history. Yours to keep.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS (fans; the artist version sits with the gap above) -->
+    <section class="how section r-fan" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <p class="label">How it works</p>
+        <h2 class="section-title" id="how-title">Three steps to closer than a follow.</h2>
         <ol class="steps">
           <li class="step" data-reveal>
             <span class="step__n">01</span>
             <div class="step__body">
-              <h3 class="step__title r-artist">Get discovered</h3>
-              <h3 class="step__title r-fan">Discover</h3>
-              <p class="r-artist">New fans find your music and follow the sound, not an algorithm. Discovery that brings you people, not just plays.</p>
-              <p class="r-fan">Find artists before everyone else. Real discovery, not whatever the feed is selling.</p>
+              <h3 class="step__title">Discover</h3>
+              <p>Find artists before everyone else. Real discovery, not whatever the feed is selling.</p>
             </div>
           </li>
           <li class="step" data-reveal>
             <span class="step__n">02</span>
             <div class="step__body">
-              <h3 class="step__title r-artist">Get closer</h3>
-              <h3 class="step__title r-fan">Join</h3>
-              <p class="r-artist">Your biggest fans step into your world: early drops, the process behind them, a say in what’s next. They back you directly. No tour required.</p>
-              <p class="r-fan">Step into their world: the Vault, the diary, the direct line, and the people who love them like you do.</p>
+              <h3 class="step__title">Join</h3>
+              <p>Step into their world: the Vault, the diary, the direct line, and the people who love them like you do.</p>
             </div>
           </li>
           <li class="step" data-reveal>
             <span class="step__n">03</span>
             <div class="step__body">
-              <h3 class="step__title r-artist">Own the relationship</h3>
-              <h3 class="step__title r-fan">Be first</h3>
-              <p class="r-artist">When a fan steps closer, they choose to be known to you. Name, contact, history: <strong>yours</strong>, exportable any time. Leave tomorrow and you keep every one.</p>
-              <p class="r-fan">Hear it before release. The artist knows you were there early.</p>
+              <h3 class="step__title">Be first</h3>
+              <p>Hear it before release. The artist knows you were there early.</p>
             </div>
           </li>
         </ol>
@@ -434,6 +490,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=202610142139"></script>
+  <script src="script.js?v=202610142158"></script>
 </body>
 </html>

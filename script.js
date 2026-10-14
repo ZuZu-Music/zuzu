@@ -574,6 +574,60 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
   }));
 })();
 
+// ---- Earnings calculator (artists): us vs them ---------------------------
+// Their number, times the share who join. On ZuZu each of those people pays
+// the artist $1 a month (half of the $2, before tax). On the major streaming
+// apps the same fans pay what they play: about 30 plays a month each, since
+// 2% of listeners drive 20% of streams at roughly 3 plays a listener, at the
+// $0.004 a play quoted on the page. All in the browser; nothing is sent.
+(function () {
+  const box = document.querySelector("[data-calc]");
+  if (!box) return;
+  const $ = (sel) => box.querySelector(sel);
+  const n = $("#calc-n");
+  const rate = $("#calc-rate");
+  const num = new Intl.NumberFormat("en-US");
+  const usd0 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  const usd2 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = (v) => (v > 0 && v < 100 && v % 1 ? usd2 : usd0).format(v);
+  const PER_PERSON = 1;                 // ZuZu: dollars a month to the artist, per person who joins
+  const PLAYS = 30, PER_PLAY = 0.004;   // streaming: the same fan, plays a month and dollars a play
+  const MAX = 100000000;
+
+  const count = () => Math.min(MAX, parseInt((n.value || "").replace(/[^0-9]/g, ""), 10) || 0);
+  const update = () => {
+    const r = parseFloat(rate.value) || 0;
+    const joined = Math.round(count() * r / 100);
+    const us = joined * PER_PERSON;
+    const them = joined * PLAYS * PER_PLAY;
+    $("[data-calc-people]").textContent = num.format(joined);
+    $("[data-calc-month]").textContent = money(us);
+    $("[data-calc-stream]").textContent = money(them);
+    $("[data-calc-year]").textContent = money(us * 12);
+    $("[data-calc-stream-year]").textContent = money(them * 12);
+    $("[data-calc-x]").textContent = Math.round(PER_PERSON / (PLAYS * PER_PLAY)) + "×";
+    const top = Math.max(us, them) || 1;
+    $("[data-calc-bar-us]").style.width = (us ? (us / top) * 100 : 0) + "%";
+    $("[data-calc-bar-them]").style.width = (them ? Math.max(2, (them / top) * 100) : 0) + "%";
+    $("[data-calc-rate-out]").textContent = (r % 1 ? r.toFixed(1) : String(r)) + "%";
+    rate.style.setProperty("--p", ((r - rate.min) / (rate.max - rate.min)) * 100 + "%");
+  };
+  n.addEventListener("input", () => {
+    const v = count();
+    n.value = v ? num.format(v) : "";
+    update();
+  });
+  rate.addEventListener("input", update);
+  box.querySelectorAll('input[name="calc-source"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      $("[data-calc-noun]").textContent = radio.value === "followers"
+        ? "How many followers do you have?"
+        : "How many monthly listeners do you have?";
+    });
+  });
+  update();
+})();
+
 // ---- Variant hero ----------------------------------------------------------
 // The variant is also set by an inline script in <head> so the right headline
 // is there on first paint. This re-asserts it after hydration and is harmless
