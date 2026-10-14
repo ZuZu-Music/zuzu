@@ -287,18 +287,27 @@ main { overflow-x: clip; }
   background: var(--card);
 }
 
-/* Phones: the top of the direct line screen rises from the bottom edge of the
-   first view and invites the scroll. Headline, field and button stay above it. */
+/* Phones: headline and lede, then both screens (the same pair as on wide
+   screens, scaled to the phone), then the form. The copy wrapper steps out
+   of the way (display: contents) so the three can be ordered. */
 @media (max-width: 899px) {
-  .hero__visual { height: clamp(104px, 20svh, 184px); overflow: hidden; }
-  .hero__shot--back { display: none; }
-  .hero__shot--front {
-    width: min(300px, 82%);
-    margin-inline: auto;
-    border-bottom: 0;
-    border-radius: var(--radius) var(--radius) 0 0;
-    box-shadow: 0 -10px 36px -22px rgba(23, 19, 15, .4);
+  .hero { min-height: 0; align-items: flex-start; }
+  .hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+  .hero__copy { display: contents; }
+  .hero .eyebrow, .hero__title, .hero__ledes { order: 1; }
+  .hero__visual {
+    order: 2;
+    --w: min(200px, 46vw);
+    position: relative;
+    justify-self: center;
+    width: calc(var(--w) * 1.66);
+    height: calc(var(--w) * 2.174 + 40px);
+    margin: 0 0 32px;
   }
+  .hero__shot { position: absolute; width: var(--w); height: auto; }
+  .hero__shot--back  { left: 0; top: 0; }
+  .hero__shot--front { left: calc(var(--w) * .66); top: 40px; }
+  .hero .waitlist-form { order: 3; width: 100%; }
 }
 /* Wide: two whole screens, one size. The direct line in front; the artist's
    profile behind it, showing the two thirds that carry the photo, the name
@@ -646,11 +655,6 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   .panel__shot { min-width: 0; }
 }
 
-@media (max-width: 899px) {
-  .hero { align-items: stretch; padding-bottom: 0; }
-  .hero__grid { grid-template-rows: 1fr auto; row-gap: clamp(20px, 5vw, 32px); }
-  .hero__copy { align-self: center; }
-}
 
 /* ---------- The join card sits on the page's centre line ---------- */
 .join__card { margin-inline: auto; text-align: center; }
@@ -689,15 +693,18 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .js-words .hero__shot--back  { animation: zz-fly-l .4s var(--fly) .38s both; }
 .js-words .hero__shot--front { animation: zz-fly-r .4s var(--fly) .5s both; }
 
-/* Screens further down fly in when they come into view (script.js). */
+/* Screens further down fly in when they come into view (script.js). The
+   starting tilt is a variable each side sets, so the landed state (one rule,
+   transform: none) wins for every screen whatever side it came from. */
 .js-fly [data-fly] {
+  --from: perspective(1200px) translateY(90px) rotate(5deg) rotateY(-10deg);
   opacity: .001;
-  transform: perspective(1200px) translateY(90px) rotate(5deg) rotateY(-10deg);
+  transform: var(--from);
   transform-origin: 50% 100%;
   transition: opacity .4s var(--ease), transform .4s var(--fly);
 }
-.js-fly .beat:nth-child(even) [data-fly] { transform: perspective(1200px) translateY(90px) rotate(-5deg) rotateY(10deg); }
-.js-fly .panel [data-fly] { transform: perspective(1600px) translateY(60px) rotateX(8deg); }
+.js-fly .beat:nth-child(even) [data-fly] { --from: perspective(1200px) translateY(90px) rotate(-5deg) rotateY(10deg); }
+.js-fly .panel [data-fly] { --from: perspective(1600px) translateY(60px) rotateX(8deg); }
 .js-fly [data-fly].is-flown { opacity: 1; transform: none; }
 /* A Studio tab opening its screen rises in. */
 .panel:not([hidden]) .panel__shot.is-flown { animation: zz-rise .4s var(--ease) both; }
