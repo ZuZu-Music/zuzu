@@ -8,4 +8,6 @@ cd "$(dirname "$0")"
 V=$(date -u +%Y%m%d%H%M)
 sed -i '' -E "s|href=\"styles\.css(\?v=[0-9]+)?\"|href=\"styles.css?v=$V\"|" index.html
 sed -i '' -E "s|src=\"script\.js(\?v=[0-9]+)?\"|src=\"script.js?v=$V\"|" index.html
+# The privacy page links the same stylesheet by absolute path.
+[ -f privacy/index.html ] && sed -i '' -E "s|href=\"/styles\.css(\?v=[0-9]+)?\"|href=\"/styles.css?v=$V\"|" privacy/index.html
 echo "cache-bust version -> $V"

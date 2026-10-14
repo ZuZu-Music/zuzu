@@ -191,7 +191,7 @@ const COPY = {
   fan: {
     cta: "Join the waitlist",
     // The ads say $2, so the page says $2 in the same breath as the signup.
-    note: "Free to join. At launch, each artist’s community is $2 a month, cancel anytime.",
+    note: "Free to join. At launch, each artist’s Fan Community is $2 a month, cancel anytime.",
     success: "You’re in. We’ll tell you the moment ZuZu opens.",
     already: "You’re already on the list. We’ll be in touch.",
   },
