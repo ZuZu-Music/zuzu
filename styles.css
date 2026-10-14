@@ -93,6 +93,7 @@ img { max-width: 100%; }
 :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; border-radius: 4px; }
 
 .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
+main { overflow-x: clip; }
 .section { padding-block: clamp(56px, 8vw, 112px); }
 #how, #waitlist, #story { scroll-margin-top: calc(var(--topbar-h) + 8px); }
 
@@ -409,7 +410,7 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .beat:first-child { border-top: 0; padding-top: clamp(8px, 2vw, 16px); }
 .beat__label { margin-bottom: 14px; }
 /* Phones: the whole screen under its beat, one width for all six. */
-.beat__shot { width: min(240px, 66%); margin-top: 28px; }
+.beat__shot { width: min(330px, 84%); margin: 32px auto 0; }
 .story__stage { display: none; }
 .beat__title {
   font-family: var(--mono); font-weight: 500;
@@ -586,7 +587,7 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 /* ---------- Responsive ---------- */
 @media (max-width: 720px) {
   .stats { grid-template-columns: 1fr; gap: 22px; }
-  .topbar__cta { display: none; }
+  .btn.topbar__cta { display: none; }
   /* DM Mono is wide: let the headline wrap naturally instead of forcing the
      desktop breaks. The <br> renders as a space, not nothing. */
   .hero__break { content: " "; display: inline; font-size: 0; }
@@ -654,3 +655,56 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 /* ---------- The join card sits on the page's centre line ---------- */
 .join__card { margin-inline: auto; text-align: center; }
 .join__sub, .join .waitlist-form { margin-inline: auto; }
+
+/* =========================================================================
+   Motion, after the same ideas as the best app sites: the headline arrives
+   word by word, and product screens fly in from a slight 3D tilt as you
+   reach them, alternating sides. Every move settles within 400ms (V1.3 p21),
+   is opacity, transform and a little blur only, and none of it runs with
+   reduced motion (the head script never sets .js-words, script.js never
+   sets .js-fly).
+   ========================================================================= */
+:root { --fly: cubic-bezier(.2, .9, .3, 1.02); }
+
+/* The headline: hidden only until script.js splits it, with a failsafe that
+   shows it anyway if that never happens. */
+@keyframes zz-show { to { opacity: 1; } }
+@keyframes zz-word { from { opacity: .001; filter: blur(5px); transform: translateY(10px); } }
+@keyframes zz-rise { from { opacity: .001; transform: translateY(14px); } }
+.js-words .hero__title { opacity: .001; animation: zz-show 0s 1.4s forwards; }
+.js-words .hero__title.is-split { opacity: 1; animation: none; }
+.hero__title .w {
+  display: inline-block;
+  animation: zz-word .4s var(--ease) both;
+  animation-delay: calc(.08s + var(--i, 0) * .06s);
+}
+.js-words .eyebrow { animation: zz-rise .4s var(--ease) both; }
+.js-words .hero__ledes { animation: zz-rise .4s var(--ease) .32s both; }
+.js-words .hero .waitlist-form { animation: zz-rise .4s var(--ease) .42s both; }
+
+/* The hero's screens: the one behind from the left, the one in front from
+   the right, a beat after the words. */
+@keyframes zz-fly-l { from { opacity: .001; transform: perspective(1200px) translate(-20px, 90px) rotate(-6deg) rotateY(10deg); } }
+@keyframes zz-fly-r { from { opacity: .001; transform: perspective(1200px) translate(20px, 90px) rotate(6deg) rotateY(-10deg); } }
+.js-words .hero__shot--back  { animation: zz-fly-l .4s var(--fly) .38s both; }
+.js-words .hero__shot--front { animation: zz-fly-r .4s var(--fly) .5s both; }
+
+/* Screens further down fly in when they come into view (script.js). */
+.js-fly [data-fly] {
+  opacity: .001;
+  transform: perspective(1200px) translateY(90px) rotate(5deg) rotateY(-10deg);
+  transform-origin: 50% 100%;
+  transition: opacity .4s var(--ease), transform .4s var(--fly);
+}
+.js-fly .beat:nth-child(even) [data-fly] { transform: perspective(1200px) translateY(90px) rotate(-5deg) rotateY(10deg); }
+.js-fly .panel [data-fly] { transform: perspective(1600px) translateY(60px) rotateX(8deg); }
+.js-fly [data-fly].is-flown { opacity: 1; transform: none; }
+/* A Studio tab opening its screen rises in. */
+.panel:not([hidden]) .panel__shot.is-flown { animation: zz-rise .4s var(--ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js-words .hero__title, .hero__title .w, .js-words .eyebrow, .js-words .hero__ledes,
+  .js-words .hero .waitlist-form, .js-words .hero__shot--back, .js-words .hero__shot--front,
+  .panel:not([hidden]) .panel__shot.is-flown { animation: none; opacity: 1; filter: none; transform: none; }
+  .js-fly [data-fly] { opacity: 1; transform: none; }
+}

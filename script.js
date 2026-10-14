@@ -513,6 +513,59 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
   }
 })();
 
+// ---- Motion: the headline word by word, screens that fly in ---------------
+// The head script sets .js-words before first paint; this splits every
+// headline variant into words, numbered for the stagger, and then shows it.
+(function () {
+  const root = document.documentElement;
+  if (root.classList.contains("js-words")) {
+    document.querySelectorAll(".hero__title > span").forEach((line) => {
+      let i = 0;
+      const walk = (node) => {
+        Array.from(node.childNodes).forEach((child) => {
+          if (child.nodeType === Node.TEXT_NODE) {
+            const parts = child.textContent.split(/(\s+)/);
+            const frag = document.createDocumentFragment();
+            parts.forEach((part) => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+              const w = document.createElement("span");
+              w.className = "w";
+              w.style.setProperty("--i", String(i++));
+              w.textContent = part;
+              frag.appendChild(w);
+            });
+            child.replaceWith(frag);
+          } else if (child.nodeType === Node.ELEMENT_NODE && child.tagName !== "BR") {
+            walk(child);
+          }
+        });
+      };
+      walk(line);
+    });
+    document.querySelectorAll(".hero__title").forEach((t) => t.classList.add("is-split"));
+  }
+
+  // Screens fly in once, when a fifth of them is in view.
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) return;
+  const flying = document.querySelectorAll("[data-fly]");
+  if (!flying.length) return;
+  root.classList.add("js-fly");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-flown");
+      io.unobserve(entry.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.18 });
+  flying.forEach((el) => io.observe(el));
+  // A Studio panel opened by its tab shows its screen straight away.
+  document.querySelectorAll('[role="tab"]').forEach((t) => t.addEventListener("click", () => {
+    const panel = document.getElementById(t.getAttribute("aria-controls"));
+    panel && panel.querySelectorAll("[data-fly]").forEach((el) => { el.classList.add("is-flown"); io.unobserve(el); });
+  }));
+})();
+
 // ---- Variant hero ----------------------------------------------------------
 // The variant is also set by an inline script in <head> so the right headline
 // is there on first paint. This re-asserts it after hydration and is harmless

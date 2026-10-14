@@ -40,6 +40,11 @@
         var v = new URLSearchParams(location.search).get("utm_content");
         var known = { ad1: 1, ad2: 1, ad4: 1 };
         document.documentElement.setAttribute("data-variant", known[v] ? v : "default");
+        /* The headline animates in word by word; flagged before first paint so
+           it never shows, vanishes and shows again. Skipped for reduced motion. */
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          document.documentElement.classList.add("js-words");
+        }
       } catch (e) {
         document.documentElement.setAttribute("data-variant", "default");
       }
@@ -48,7 +53,7 @@
 
   <!-- The direct line screen is the hero on every width: in front of the artist profile on wide screens, peeking under the form on phones. -->
   <link rel="preload" as="image" href="assets/shot-line.webp" />
-  <link rel="stylesheet" href="styles.css?v=202610141738" />
+  <link rel="stylesheet" href="styles.css?v=202610141745" />
 </head>
 <body data-role="fan">
   <a class="skip-link" href="#top">Skip to content</a>
@@ -168,31 +173,31 @@
               <p class="label beat__label">01 · The direct line</p>
               <h3 class="beat__title">The artist writes to you. You write back.</h3>
               <p class="beat__text">One thread, just the two of you. Not a comment section, not a broadcast.</p>
-              <img class="beat__shot shot" src="assets/shot-line.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A direct line thread between a fan and an artist: the artist asks what pulled you in, and answers which version goes out first." />
+              <img class="beat__shot shot" data-fly src="assets/shot-line.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A direct line thread between a fan and an artist: the artist asks what pulled you in, and answers which version goes out first." />
             </article>
             <article class="beat" data-beat="2" data-reveal>
               <p class="label beat__label">02 · Early access</p>
               <h3 class="beat__title">The new song, before release day.</h3>
               <p class="beat__text">And the loop it started as, the line that got cut, the note on why. You hear the record while it’s being made.</p>
-              <img class="beat__shot shot" src="assets/shot-diary.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A song diary: a voice note of the first loop with its waveform, a note on why the kick comes in late, and the finished song marked yours now, everyone else on release day." />
+              <img class="beat__shot shot" data-fly src="assets/shot-diary.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A song diary: a voice note of the first loop with its waveform, a note on why the kick comes in late, and the finished song marked yours now, everyone else on release day." />
             </article>
             <article class="beat" data-beat="3" data-reveal>
               <p class="label beat__label">03 · The Vault</p>
               <h3 class="beat__title">Everything that never gets released.</h3>
               <p class="beat__text">Stems, demos, live takes, sleeve tests. It stays here, for the people who joined.</p>
-              <img class="beat__shot shot" src="assets/shot-vault.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Vault, filtered by demos, voice memos, photos and live: a sleeve test, stems, a live set, a photo of the desk, a session photo and a voice memo." />
+              <img class="beat__shot shot" data-fly src="assets/shot-vault.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Vault, filtered by demos, voice memos, photos and live: a sleeve test, stems, a live set, a photo of the desk, a session photo and a voice memo." />
             </article>
             <article class="beat" data-beat="4" data-reveal>
               <p class="label beat__label">04 · The room</p>
               <h3 class="beat__title">A room with the artist in it.</h3>
               <p class="beat__text">The community chat is them and the people who hear it the way you do. Ask something. They answer.</p>
-              <img class="beat__shot shot" src="assets/shot-chat.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A community chat: fans asking about the tram at the end of the live set, and the artist answering." />
+              <img class="beat__shot shot" data-fly src="assets/shot-chat.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A community chat: fans asking about the tram at the end of the live set, and the artist answering." />
             </article>
             <article class="beat" data-beat="5" data-reveal>
               <p class="label beat__label">05 · The community</p>
               <h3 class="beat__title">Join, and all of it opens.</h3>
               <p class="beat__text">The line, the new music, the Vault and the room, in one place. And the artist knows you were here early.</p>
-              <img class="beat__shot shot" src="assets/shot-community.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Fan Community in the ZuZu app, marked Joined: early access, stems and a direct line, with doors to the community chat, the Vault and the direct line." />
+              <img class="beat__shot shot" data-fly src="assets/shot-community.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Fan Community in the ZuZu app, marked Joined: early access, stems and a direct line, with doors to the community chat, the Vault and the direct line." />
             </article>
           </div>
 
@@ -264,7 +269,7 @@
               <p class="panel__text">Who joined, who’s listening, what’s playing and what you’ve earned. Hide the counts when you’d rather not look.</p>
             </div>
             <div class="panel__frame">
-              <img class="panel__shot shot" src="assets/studio-dashboard.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The ZuZu Studio dashboard: people who joined, listeners, plays, revenue and gifts, monthly plays, the community’s growth, recent activity and top tracks." />
+              <img class="panel__shot shot" data-fly src="assets/studio-dashboard.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The ZuZu Studio dashboard: people who joined, listeners, plays, revenue and gifts, monthly plays, the community’s growth, recent activity and top tracks." />
             </div>
           </div>
           <div class="panel" role="tabpanel" id="panel-audience" aria-labelledby="tab-audience">
@@ -273,7 +278,7 @@
               <p class="panel__text">Listeners grouped by how they listen, where they are and what they play. Message any group from here.</p>
             </div>
             <div class="panel__frame">
-              <img class="panel__shot shot" src="assets/studio-audience.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio Audience: listeners, streams, saves and people who joined over twelve months, with top songs, sources of streams and audience segments." />
+              <img class="panel__shot shot" data-fly src="assets/studio-audience.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio Audience: listeners, streams, saves and people who joined over twelve months, with top songs, sources of streams and audience segments." />
             </div>
           </div>
           <div class="panel" role="tabpanel" id="panel-room" aria-labelledby="tab-room">
@@ -282,7 +287,7 @@
               <p class="panel__text">The same room your people are in, from your desk. Drop in whenever.</p>
             </div>
             <div class="panel__frame">
-              <img class="panel__shot shot" src="assets/studio-room.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The Studio inbox showing the community room, with fans talking and the artist answering, and direct line requests beside it." />
+              <img class="panel__shot shot" data-fly src="assets/studio-room.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The Studio inbox showing the community room, with fans talking and the artist answering, and direct line requests beside it." />
             </div>
           </div>
           <div class="panel" role="tabpanel" id="panel-lines" aria-labelledby="tab-lines">
@@ -291,7 +296,7 @@
               <p class="panel__text">One thread each, and nothing you didn’t open.</p>
             </div>
             <div class="panel__frame">
-              <img class="panel__shot shot" src="assets/studio-lines.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio direct lines: a list of open lines with each fan’s last message, and the thread beside it." />
+              <img class="panel__shot shot" data-fly src="assets/studio-lines.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio direct lines: a list of open lines with each fan’s last message, and the thread beside it." />
             </div>
           </div>
           <div class="panel" role="tabpanel" id="panel-music" aria-labelledby="tab-music">
@@ -300,7 +305,7 @@
               <p class="panel__text">Records, songs and drafts, lossless in. Publish when it’s ready.</p>
             </div>
             <div class="panel__frame">
-              <img class="panel__shot shot" src="assets/studio-music.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio My Music: an album and an EP with their tracks, each published or draft, and an upload button." />
+              <img class="panel__shot shot" data-fly src="assets/studio-music.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio My Music: an album and an EP with their tracks, each published or draft, and an upload button." />
             </div>
           </div>
           <div class="panel" role="tabpanel" id="panel-vault" aria-labelledby="tab-vault">
@@ -309,7 +314,7 @@
               <p class="panel__text">Demos, voice notes, photos and live takes, with the Song Diary beside each track.</p>
             </div>
             <div class="panel__frame">
-              <img class="panel__shot shot" src="assets/studio-vault.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The Studio Vault: pieces linked to songs and marked Vault or Diary, with a diary panel for one track." />
+              <img class="panel__shot shot" data-fly src="assets/studio-vault.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The Studio Vault: pieces linked to songs and marked Vault or Diary, with a diary panel for one track." />
             </div>
           </div>
           <div class="panel" role="tabpanel" id="panel-live" aria-labelledby="tab-live">
@@ -318,7 +323,7 @@
               <p class="panel__text">Studio runs the room; your phone is the camera. A free preview, then your people.</p>
             </div>
             <div class="panel__frame">
-              <img class="panel__shot shot" src="assets/studio-live.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio Go Live: pair your phone, set a title and type, choose a free preview, go live now or schedule." />
+              <img class="panel__shot shot" data-fly src="assets/studio-live.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio Go Live: pair your phone, set a title and type, choose a free preview, go live now or schedule." />
             </div>
           </div>
         </div>
@@ -429,6 +434,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=202610141738"></script>
+  <script src="script.js?v=202610141745"></script>
 </body>
 </html>
