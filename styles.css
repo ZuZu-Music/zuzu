@@ -463,13 +463,18 @@ body[data-role="fan"]    .hero__ledes .r-artist {
     height: min(560px, calc(100vh - var(--topbar-h) - 180px));
     aspect-ratio: 402 / 874;
   }
+  /* Each screen floats in from below as its beat arrives and drifts up and
+     away as you pass it: the same lift and tilt as the phone layout. */
   .stage__shot {
     grid-area: 1 / 1;
     width: 100%; height: 100%;
     opacity: 0;
-    transition: opacity .3s var(--ease);
+    transform: perspective(1200px) translateY(110px) rotate(5deg) rotateY(-10deg);
+    transform-origin: 50% 100%;
+    transition: opacity var(--fade-dur) var(--fly), transform var(--fly-dur) var(--fly);
   }
-  .stage__shot.is-active { opacity: 1; }
+  .stage__shot.is-past { transform: perspective(1200px) translateY(-90px) rotate(-4deg) rotateY(8deg); }
+  .stage__shot.is-active { opacity: 1; transform: none; }
 }
 
 /* ---------- The gap ---------- */
@@ -669,7 +674,15 @@ body[data-role="fan"]    .hero__ledes .r-artist {
    reduced motion (the head script never sets .js-words, script.js never
    sets .js-fly).
    ========================================================================= */
-:root { --fly: cubic-bezier(.2, .9, .3, 1.02); }
+/* The float: about a second, a long lift and a soft landing, the same on
+   every screen and every width. Slower than the guide's 400ms on purpose
+   (Antonis, 2026-10-14: "those screens don't float enough"). */
+:root {
+  --fly: cubic-bezier(.16, 1, .3, 1);
+  --fly-dur: 1.2s;
+  --fade-dur: .8s;
+  --text-dur: .7s;
+}
 
 /* The headline: hidden only until script.js splits it, with a failsafe that
    shows it anyway if that never happens. */
@@ -680,35 +693,36 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .js-words .hero__title.is-split { opacity: 1; animation: none; }
 .hero__title .w {
   display: inline-block;
-  animation: zz-word .4s var(--ease) both;
-  animation-delay: calc(.08s + var(--i, 0) * .06s);
+  animation: zz-word var(--text-dur) var(--fly) both;
+  animation-delay: calc(.08s + var(--i, 0) * .07s);
 }
-.js-words .eyebrow { animation: zz-rise .4s var(--ease) both; }
-.js-words .hero__ledes { animation: zz-rise .4s var(--ease) .32s both; }
-.js-words .hero .waitlist-form { animation: zz-rise .4s var(--ease) .42s both; }
+.js-words .eyebrow { animation: zz-rise var(--text-dur) var(--fly) both; }
+.js-words .hero__ledes { animation: zz-rise var(--text-dur) var(--fly) .4s both; }
+.js-words .hero .waitlist-form { animation: zz-rise var(--text-dur) var(--fly) .52s both; }
 
 /* The hero's screens: the one behind from the left, the one in front from
    the right, a beat after the words. */
-@keyframes zz-fly-l { from { opacity: .001; transform: perspective(1200px) translate(-20px, 90px) rotate(-6deg) rotateY(10deg); } }
-@keyframes zz-fly-r { from { opacity: .001; transform: perspective(1200px) translate(20px, 90px) rotate(6deg) rotateY(-10deg); } }
-.js-words .hero__shot--back  { animation: zz-fly-l .4s var(--fly) .38s both; }
-.js-words .hero__shot--front { animation: zz-fly-r .4s var(--fly) .5s both; }
+@keyframes zz-fly-l { from { opacity: .001; transform: perspective(1200px) translate(-24px, 140px) rotate(-7deg) rotateY(12deg); } }
+@keyframes zz-fly-r { from { opacity: .001; transform: perspective(1200px) translate(24px, 140px) rotate(7deg) rotateY(-12deg); } }
+.js-words .hero__shot--back  { animation: zz-fly-l var(--fly-dur) var(--fly) .45s both; }
+.js-words .hero__shot--front { animation: zz-fly-r var(--fly-dur) var(--fly) .65s both; }
 
 /* Screens further down fly in when they come into view (script.js). The
    starting tilt is a variable each side sets, so the landed state (one rule,
    transform: none) wins for every screen whatever side it came from. */
 .js-fly [data-fly] {
-  --from: perspective(1200px) translateY(90px) rotate(5deg) rotateY(-10deg);
+  --from: perspective(1200px) translateY(140px) rotate(7deg) rotateY(-12deg);
   opacity: .001;
   transform: var(--from);
   transform-origin: 50% 100%;
-  transition: opacity .4s var(--ease), transform .4s var(--fly);
+  transition: opacity var(--fade-dur) var(--fly), transform var(--fly-dur) var(--fly);
 }
-.js-fly .beat:nth-child(even) [data-fly] { --from: perspective(1200px) translateY(90px) rotate(-5deg) rotateY(10deg); }
-.js-fly .panel [data-fly] { --from: perspective(1600px) translateY(60px) rotateX(8deg); }
+.js-fly .beat:nth-child(even) [data-fly] { --from: perspective(1200px) translateY(140px) rotate(-7deg) rotateY(12deg); }
+.js-fly .panel [data-fly] { --from: perspective(1600px) translateY(90px) rotateX(10deg); }
+.js-fly .stage[data-fly] { --from: perspective(1200px) translateY(140px) rotate(6deg) rotateY(-12deg); }
 .js-fly [data-fly].is-flown { opacity: 1; transform: none; }
 /* A Studio tab opening its screen rises in. */
-.panel:not([hidden]) .panel__shot.is-flown { animation: zz-rise .4s var(--ease) both; }
+.panel:not([hidden]) .panel__shot.is-flown { animation: zz-rise var(--text-dur) var(--fly) both; }
 
 @media (prefers-reduced-motion: reduce) {
   .js-words .hero__title, .hero__title .w, .js-words .eyebrow, .js-words .hero__ledes,

@@ -458,7 +458,15 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
     const shots = Array.from(stage.querySelectorAll("[data-shot]"));
     const beats = story ? story.querySelectorAll("[data-beat]") : [];
     if (!shots.length || !beats.length) return;
-    const show = (id) => shots.forEach((img) => img.classList.toggle("is-active", img.dataset.shot === id));
+    // The screen for this beat comes in; the ones already passed drift up and
+    // away, the ones still to come wait below.
+    const show = (id) => {
+      const at = shots.findIndex((img) => img.dataset.shot === id);
+      shots.forEach((img, i) => {
+        img.classList.toggle("is-active", i === at);
+        img.classList.toggle("is-past", i < at);
+      });
+    };
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -557,7 +565,7 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
       entry.target.classList.add("is-flown");
       io.unobserve(entry.target);
     });
-  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.18 });
+  }, { rootMargin: "0px 0px -6% 0px", threshold: 0.12 });
   flying.forEach((el) => io.observe(el));
   // A Studio panel opened by its tab shows its screen straight away.
   document.querySelectorAll('[role="tab"]').forEach((t) => t.addEventListener("click", () => {
