@@ -14,17 +14,186 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ONBvfglyMxEgcDTXJDnyZw_UZxpb0X1
 const WAITLIST_ENDPOINT = SUPABASE_URL + "/rest/v1/waitlist";
 const isConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 
+// ---------------------------------------------------------------------------
+// 2. CAMPAIGN ATTRIBUTION
+//    Read once on landing and keep it for the session, so a signup made after
+//    the visitor has clicked around still carries the ad that brought them.
+//    Everything here is wrapped: attribution must never be the reason a signup
+//    fails, so every read and write degrades to "direct" rather than throwing.
+// ---------------------------------------------------------------------------
+const ATTRIBUTION_KEY = "zuzu_attr";
+
+// Known ad variants. An unknown utm_content falls back to the default hero
+// rather than rendering an empty headline.
+const VARIANTS = {
+  ad1: "ad1",
+  ad2: "ad2",
+  ad4: "ad4",
+};
+
+function readAttribution() {
+  const attr = { source: "", medium: "", campaign: "", content: "", variant: "", referrer: "" };
+  let q = null;
+  try { q = new URLSearchParams(window.location.search); } catch (err) { /* leave q null */ }
+  const hasUtm = Boolean(q && (q.get("utm_source") || q.get("utm_medium") || q.get("utm_campaign") || q.get("utm_content")));
+
+  // Session copy: the landing page set it, later navigations keep it. A URL
+  // that carries its own utm_* is newer information (a fresh ad click in a tab
+  // that had already seen the site), so it wins over the saved copy.
+  if (!hasUtm) {
+    try {
+      const saved = sessionStorage.getItem(ATTRIBUTION_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch (err) {
+      /* private mode, blocked storage — fall through and re-derive */
+    }
+  }
+
+  try {
+    const clip = (v, n) => (v || "").slice(0, n);
+    attr.source   = clip(q && q.get("utm_source"), 64);
+    attr.medium   = clip(q && q.get("utm_medium"), 64);
+    attr.campaign = clip(q && q.get("utm_campaign"), 64);
+    attr.content  = clip(q && q.get("utm_content"), 64);
+    attr.variant  = VARIANTS[attr.content] || "";
+    // Same-origin referrers say nothing useful about where the visitor came from.
+    const ref = document.referrer || "";
+    attr.referrer = ref && ref.indexOf(window.location.origin) !== 0 ? clip(ref, 300) : "";
+  } catch (err) {
+    /* leave the blanks */
+  }
+
+  try {
+    sessionStorage.setItem(ATTRIBUTION_KEY, JSON.stringify(attr));
+  } catch (err) {
+    /* not fatal — we just re-derive on the next page */
+  }
+  return attr;
+}
+
+const ATTR = readAttribution();
+
+// Until the migration adds real columns, attribution rides in `source`, which is
+// capped at 64 chars by a CHECK constraint. "direct" when there is no campaign.
+function sourceString() {
+  const parts = [ATTR.source, ATTR.campaign, ATTR.content].filter(Boolean);
+  return parts.length ? parts.join("/").slice(0, 64) : "direct";
+}
+
+// ---------------------------------------------------------------------------
+// 3. META PIXEL  (optional — leave PIXEL_ID empty and nothing is loaded at all)
+//    PageView on landing, Lead only after an insert we know succeeded. The
+//    email never leaves this page: Meta gets the event, not the person.
+// ---------------------------------------------------------------------------
+const PIXEL_ID = "2535552426932453";
+
+function loadPixel() {
+  if (!PIXEL_ID) return;                 // no id, no script, no third-party request
+  if (window.fbq) return;
+  /* eslint-disable */
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+  (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  /* eslint-enable */
+  window.fbq("init", PIXEL_ID);
+  window.fbq("track", "PageView");
+}
+
+function pixelLead() {
+  if (!PIXEL_ID || !window.fbq) return;
+  try {
+    // No email, no name, no external id. Variant only, so we can read the ads.
+    window.fbq("track", "Lead", { content_name: ATTR.variant || "default" });
+  } catch (err) {
+    /* a blocked pixel must never surface to the visitor */
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. AFTER SIGNUP — one optional question, then a share link.
+// ---------------------------------------------------------------------------
+const ARTIST_REQUEST_ENDPOINT = SUPABASE_URL + "/rest/v1/artist_requests";
+let signedUpEmail = "";
+
+function onSignedUp(email, role) {
+  signedUpEmail = email;
+  pixelLead();
+  if (role !== "fan") return;            // the follow-up question is fan-only
+  const panel = document.querySelector("[data-after-signup]");
+  if (panel) panel.hidden = false;
+}
+
+function setupArtistRequest() {
+  const form = document.querySelector("[data-artist-request]");
+  if (!form) return;
+  const input = form.querySelector("input");
+  const status = form.querySelector(".waitlist-form__status");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const artist = (input.value || "").trim().slice(0, 120);
+    if (!artist) { input.focus(); return; }
+    const button = form.querySelector(".btn");
+    button.disabled = true;
+    try {
+      const res = await fetch(ARTIST_REQUEST_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: "Bearer " + SUPABASE_PUBLISHABLE_KEY,
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ email: signedUpEmail, artist }),
+      });
+      // 404 = the table is not migrated yet. Thank them anyway: this is a
+      // bonus question and must never look broken to the visitor.
+      if (!res.ok && res.status !== 404 && res.status !== 409) throw new Error("HTTP " + res.status);
+      form.reset();
+      setStatus(status, "Noted. We\u2019ll see what we can do.", "ok");
+    } catch (err) {
+      setStatus(status, "Couldn\u2019t save that one. No matter \u2014 you\u2019re still on the list.", "ok");
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
+function setupShare() {
+  const btn = document.querySelector("[data-share]");
+  if (!btn) return;
+  const url = "https://zuzu.music/?utm_source=referral";
+  btn.addEventListener("click", async () => {
+    const label = btn.textContent;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "ZuZu", text: "Get closer than a follow.", url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      btn.textContent = "Link copied";
+      setTimeout(() => { btn.textContent = label; }, 2000);
+    } catch (err) {
+      /* a cancelled share is not a failure */
+    }
+  });
+}
+
 // Per-role copy. Changing the toggle rewrites these across the page.
 const COPY = {
   artist: {
     cta: "Become a founding artist",
     note: "Free. Priority onboarding at launch, and first pick of your @handle.",
     success: "You’re on the founding-artist list. We’ll bring you in first when we open the doors.",
+    already: "You’re already on the list. We’ll be in touch.",
   },
   fan: {
     cta: "Join the waitlist",
-    note: "Free. First access at launch, and your handle before anyone else.",
-    success: "You’re in. We’ll let you know the moment there’s a door to open.",
+    // The ads say $2, so the page says $2 in the same breath as the signup.
+    note: "Free to join. At launch, each artist’s community is $2 a month, cancel anytime.",
+    success: "You’re in. We’ll tell you the moment ZuZu opens.",
+    already: "You’re already on the list. We’ll be in touch.",
   },
 };
 
@@ -43,11 +212,11 @@ function applyRole(role) {
   const theme = role === "artist" ? "dark" : "light";
   document.documentElement.setAttribute("data-theme", theme);
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "dark" ? "#0b0b08" : "#f7f3ee");
+  if (meta) meta.setAttribute("content", theme === "dark" ? "#17130F" : "#F6F2F0");
 
-  // Sync every toggle's pressed state.
-  document.querySelectorAll("[data-role-toggle] .seg__btn").forEach((btn) => {
-    btn.setAttribute("aria-pressed", String(btn.dataset.roleSet === role));
+  // The link is a toggle, so it announces whether the artist view is on.
+  document.querySelectorAll("[data-role-toggle-link]").forEach((btn) => {
+    btn.setAttribute("aria-pressed", String(role === "artist"));
   });
 
   // Swap CTA labels (only the default label, never the in-flight "Joining…").
@@ -75,14 +244,21 @@ function switchRole(role) {
     if (transition && transition.updateCallbackDone) {
       transition.updateCallbackDone.then(revealInView).catch(() => {});
     }
+    // A transition aborted by a second click or a hidden tab rejects these too;
+    // the DOM update has already happened, so there is nothing to recover.
+    if (transition) {
+      if (transition.ready) transition.ready.catch(() => {});
+      if (transition.finished) transition.finished.catch(() => {});
+    }
   } else {
     applyRole(role);
     revealInView();
   }
 }
 
-document.querySelectorAll("[data-role-toggle] .seg__btn").forEach((btn) => {
-  btn.addEventListener("click", () => switchRole(btn.dataset.roleSet));
+// The segmented control is gone; the role now flips from one quiet link.
+document.querySelectorAll("[data-role-toggle-link]").forEach((btn) => {
+  btn.addEventListener("click", () => switchRole(getRole() === "fan" ? "artist" : "fan"));
 });
 
 // ---- Forms ----------------------------------------------------------------
@@ -106,13 +282,14 @@ function setupForm(form) {
     }
 
     const role = getRole();
+    let duplicate = false;
     button.disabled = true;
     const original = button.textContent;
     button.textContent = "Joining…";
 
     try {
       if (isConfigured) {
-        const res = await fetch(WAITLIST_ENDPOINT, {
+        let res = await fetch(WAITLIST_ENDPOINT, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -122,30 +299,73 @@ function setupForm(form) {
             // needs a SELECT grant we deliberately do not give anon.
             Prefer: "return=minimal",
           },
-          body: JSON.stringify({ email, role, source: "zuzu-waitlist" }),
+          body: JSON.stringify(waitlistRow(email, role)),
         });
 
-        // 409 = the unique index caught a repeat signup. That is a success from
-        // the visitor's point of view, not an error.
-        if (!res.ok && res.status !== 409) throw new Error("HTTP " + res.status);
+        // The attribution columns only exist once the migration is run. Until
+        // then PostgREST rejects them as unknown columns (400/422) - so fall
+        // back to the three columns that have always been there. Tracking is
+        // never allowed to be the reason a signup fails.
+        if (res.status === 400 || res.status === 422) {
+          res = await fetch(WAITLIST_ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              apikey: SUPABASE_PUBLISHABLE_KEY,
+              Authorization: "Bearer " + SUPABASE_PUBLISHABLE_KEY,
+              Prefer: "return=minimal",
+            },
+            body: JSON.stringify({ email, role, source: sourceString() }),
+          });
+        }
+
+        // 409 = the unique index caught a repeat signup. Not an error, but say
+        // something truer than the first-time message.
+        duplicate = res.status === 409;
+        if (!res.ok && !duplicate) throw new Error("HTTP " + res.status);
       } else {
         await wait(600); // DEMO mode — no endpoint configured yet.
       }
 
       form.reset();
       if (isConfigured) {
-        setStatus(status, COPY[role].success, "ok");
+        setStatus(status, duplicate ? COPY[role].already : COPY[role].success, "ok");
+        onSignedUp(email, role);
       } else {
         // Demo preview — be honest that nothing was actually sent.
         setStatus(status, "Demo preview — the waitlist isn’t live yet, so nothing was sent.", "ok");
       }
     } catch (err) {
-      setStatus(status, "Something went wrong on our end. Try again in a moment?", "error");
+      const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+      setStatus(
+        status,
+        offline
+          ? "Looks like you\u2019re offline. We\u2019ll be here when you\u2019re back."
+          : "Something went wrong on our end. Try again in a moment?",
+        "error"
+      );
     } finally {
       button.disabled = false;
       button.textContent = COPY[getRole()].cta;
     }
   });
+}
+
+// The insert body. Attribution is best-effort: if anything here is missing the
+// signup still goes through with source "direct".
+function waitlistRow(email, role) {
+  const row = { email, role, source: sourceString() };
+  try {
+    if (ATTR.source)   row.utm_source   = ATTR.source;
+    if (ATTR.medium)   row.utm_medium   = ATTR.medium;
+    if (ATTR.campaign) row.utm_campaign = ATTR.campaign;
+    if (ATTR.content)  row.utm_content  = ATTR.content;
+    if (ATTR.variant)  row.variant      = ATTR.variant;
+    if (ATTR.referrer) row.referrer     = ATTR.referrer;
+  } catch (err) {
+    /* fall back to the three required fields */
+  }
+  return row;
 }
 
 function setStatus(el, msg, kind) {
@@ -216,15 +436,99 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
         revealObserver.unobserve(entry.target);
       });
     },
-    // Fire once the element is properly inside the viewport, not as its top edge
-    // grazes the fold — otherwise the 400ms settle finishes before you see it.
-    { rootMargin: "0px 0px -18% 0px", threshold: 0 }
+    // Start slightly BEFORE the element reaches the fold, so it has finished
+    // arriving by the time it is actually in front of you. Triggering late is
+    // what made the page feel sluggish.
+    { rootMargin: "0px 0px 12% 0px", threshold: 0 }
   );
 
   observeReveals();
 }
 
+// ---- Story stages ---------------------------------------------------------
+// Wide viewports only: the screen beside a story follows whichever beat is in
+// the middle of the viewport. One IntersectionObserver per story with a thin
+// band around the centre, so there is no scroll listener and no per-frame
+// work. On phones the stage is display:none and each beat carries its own
+// screen inline. Both the fan story and the Studio story use this.
+(function () {
+  if (!("IntersectionObserver" in window)) return;
+  document.querySelectorAll("[data-stage]").forEach((stage) => {
+    const story = stage.closest(".story");
+    const shots = Array.from(stage.querySelectorAll("[data-shot]"));
+    const beats = story ? story.querySelectorAll("[data-beat]") : [];
+    if (!shots.length || !beats.length) return;
+    const show = (id) => shots.forEach((img) => img.classList.toggle("is-active", img.dataset.shot === id));
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) show(entry.target.dataset.beat);
+        });
+      },
+      { rootMargin: "-42% 0px -42% 0px", threshold: 0 }
+    );
+    beats.forEach((beat) => io.observe(beat));
+  });
+})();
+
+// ---- Studio tabs -----------------------------------------------------------
+// Progressive: without this every panel shows, one under another. With it, one
+// panel at a time, arrow keys move between tabs, and the other screens are
+// fetched as soon as the section comes near so a tab never opens on a blank.
+(function () {
+  const list = document.querySelector("[data-tabs]");
+  if (!list) return;
+  const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+  const panels = tabs.map((t) => document.getElementById(t.getAttribute("aria-controls")));
+  if (!tabs.length || panels.some((p) => !p)) return;
+  document.documentElement.classList.add("js-tabs");
+
+  const select = (i, focus) => {
+    tabs.forEach((t, n) => {
+      t.setAttribute("aria-selected", String(n === i));
+      t.tabIndex = n === i ? 0 : -1;
+      panels[n].hidden = n !== i;
+    });
+    if (focus) tabs[i].focus();
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(i, false));
+    t.addEventListener("keydown", (e) => {
+      const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      select((i + step + tabs.length) % tabs.length, true);
+    });
+  });
+  select(0, false);
+
+  const section = list.closest("section");
+  if (section && "IntersectionObserver" in window) {
+    const warm = new IntersectionObserver((entries) => {
+      if (!entries.some((en) => en.isIntersecting)) return;
+      panels.forEach((p) => p.querySelectorAll("img").forEach((img) => { img.loading = "eager"; }));
+      warm.disconnect();
+    }, { rootMargin: "400px 0px" });
+    warm.observe(section);
+  }
+})();
+
+// ---- Variant hero ----------------------------------------------------------
+// The variant is also set by an inline script in <head> so the right headline
+// is there on first paint. This re-asserts it after hydration and is harmless
+// if the head script already ran.
+function applyVariant() {
+  const v = ATTR.variant;
+  document.documentElement.setAttribute("data-variant", v || "default");
+  // Meta traffic is fan traffic: never land them on the artist view.
+  if (ATTR.source === "meta") applyRole("fan");
+}
+
 // Init.
+applyVariant();
 applyRole(getRole());
+setupArtistRequest();
+setupShare();
+loadPixel();
 const yearEl = document.querySelector("[data-year]");
 if (yearEl) yearEl.textContent = new Date().getFullYear();

@@ -1,682 +1,656 @@
 /* =========================================================
-   ZuZu — waitlist landing
-   Aligned to the ZuZu Brand Guide V1.1:
-   DM Mono (display · labels · numbers · wordmark) + DM Sans (body),
-   weight discipline (nothing over Medium, no italics),
-   brand palette + grainy horizontal-band gradients.
+   ZuZu — waitlist landing · Brand Guide V1.3
+   Layout: a full-strength gradient cover, then a Paper page that tells one
+   song's story from Rand Bellar's community (a sticky screen that follows
+   the text on wide viewports, inline screens on phones), the six promises
+   as a table, FAQ, and one highlighted join card.
+   Type: DM Mono for display, titles, labels and numbers; DM Sans for body,
+   captions and buttons. Nothing heavier than Medium, no italics.
    ========================================================= */
 
 :root {
-  /* Brand palette — ZuZu Brand Guide V1.1 */
-  --ink:        #14110f;   /* warm near-black — text/foreground */
-  --ink-soft:   #4a423c;
-  --ink-faint:  #6f655c;   /* passes WCAG AA (4.5:1) on the light surface */
-  --cream:      #f6f2f0;   /* Primary MAIN (light) — page anchor */
-  --cream-deep: #efe9e6;   /* raised surface (toggle track, chips) */
-  --line:       #e2dbd4;   /* hairline */
-  /* Solid 1px hairline + white card fill — matches the app (input border #b2aca7). */
-  --hairline:   rgba(20, 17, 15, .22);
-  --card-bg:    rgba(255, 255, 255, .86);
-  --ring:       #d9c5ed;   /* lilac selection ring — "selection belongs to the ring" */
-  --lilac:      #d1c3db;   /* light-mode accent / emphasis fill */
-  --blush:      #eed7e3;   /* primary gradient stop */
-  --peri:       #bdc1de;   /* primary gradient stop (periwinkle) */
-  --periwinkle: #5b725a;   /* sage — labels & numeric accents (4.72:1 on light) */
-  --pink:       #5b725a;   /* legacy alias → sage, kept on-brand */
+  /* Palette — V1.3 p16 */
+  --ink:    #17130F;
+  --paper:  #F6F2F0;
+  --peri:   #BDC1DE;
+  --lilac:  #D7C3DD;
+  --blush:  #F1E5E8;
+  --sage:   #5B725A;
+
+  /* Mode tokens (light = fan view) */
+  --surface:  var(--paper);
+  --fg:       var(--ink);
+  --fg-70:    color-mix(in srgb, var(--ink) 70%, transparent);
+  --fg-60:    color-mix(in srgb, var(--ink) 70%, transparent);  /* on a gradient the floor is 70 (p21) */
+  --label:    color-mix(in srgb, var(--ink) 70%, transparent);  /* Sage labels sit on Paper and White only; on a gradient, Ink at 70 */
+  --wash:     .25;                                               /* p18: the hero gradient at 25% over its surface */
+  --grain:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");  /* the grain tile the app uses, 64px, overlay */
+  --hairline: color-mix(in srgb, var(--ink) 12%, transparent);  /* 1px hairlines */
+  --outline:  color-mix(in srgb, var(--ink) 50%, transparent);  /* secondary buttons */
+  --rest:     color-mix(in srgb, var(--ink) 8%, transparent);   /* at-rest fills */
+  --card:     #FFFFFF;
+  --hero-grad: linear-gradient(to bottom right, #BDC1DE 0%, #D7C3DD 33%, #F1E5E8 67%, #FFFFFF 100%);
+  --btn-grad:  linear-gradient(to bottom right, #B7BEF8, #E3BAEF, #F9E2E8);
+  --btn-fg:   var(--ink);
+  --ok:       #2F6B45;
+  --err:      #B8261C;
+  --shadow:   0 28px 60px -36px rgba(23, 19, 15, .42);
+  --topbar-bg:       rgba(246, 242, 240, .55);
+  --topbar-bg-stuck: rgba(246, 242, 240, .8);
 
   --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-
-  --btn-grad: linear-gradient(120deg, #d7c3dd 0%, #bdc1de 100%);  /* primary CTA — the money moment */
-  --btn-fg:   #14110f;
-
-  --field-bg:       #ffffff;
-  --panel-border:   #ffffff;
-  --topbar-bg:      rgba(246, 242, 240, .5);
-  --topbar-bg-stuck:rgba(246, 242, 240, .7);
-  --topbar-border:  rgba(20, 17, 15, .08);
-  --footer-bg:      #14110f;
-  --footer-fg:      #f6f2f0;
-  --grain-opacity:  .13;
-
-  --radius:     12px;      /* buttons */
-  --radius-lg:  16px;      /* cards & panels */
-  --maxw:       1080px;
-  --ease:       cubic-bezier(.2, .7, .2, 1);
+  --radius:   12px;
+  --maxw:     1080px;
+  --gutter:   clamp(20px, 5vw, 40px);
+  --topbar-h: 84px;
+  --ease:     cubic-bezier(.2, .7, .2, 1);
 }
 
-/* ---------- Dark theme ---------- */
+/* Night (artist view) */
 :root[data-theme="dark"] {
-  --ink:        #f6f2f0;   /* warm off-white — foreground */
-  --ink-soft:   #b6aca1;
-  --ink-faint:  #897f74;
-  --cream:      #0b0b08;   /* near-black surface (paired with --ink for chips) */
-  --cream-deep: #17140f;   /* raised surface (toggle track) */
-  --line:       #2f2e26;
-  --hairline:   rgba(246, 242, 240, .16);
-  --card-bg:    rgba(255, 255, 255, .05);
-  --ring:       #9db98c;
-  --lilac:      #7f9d6e;
-  --periwinkle: #7f9d6e;   /* sage green — dark-mode accent */
-  --pink:       #7f9d6e;
-
-  --btn-grad: linear-gradient(120deg, #2c3f34 0%, #303429 100%);  /* primary CTA — forest family */
-  --btn-fg:   #f6f2f0;
-
-  --field-bg:       #1b1712;
-  --panel-border:   rgba(255, 255, 255, .10);
-  --topbar-bg:      rgba(10, 9, 7, .44);
-  --topbar-bg-stuck:rgba(10, 9, 7, .62);
-  --topbar-border:  rgba(255, 255, 255, .1);
-  --footer-bg:      #0b0906;
-  --footer-fg:      #f6f2f0;
-  --grain-opacity:  .1;
+  --surface:  var(--ink);
+  --fg:       #FFFFFF;
+  --fg-70:    rgba(255, 255, 255, .7);
+  --fg-60:    rgba(255, 255, 255, .7);
+  --label:    rgba(255, 255, 255, .7);
+  --hairline: rgba(255, 255, 255, .12);
+  --outline:  rgba(255, 255, 255, .5);
+  --rest:     rgba(255, 255, 255, .08);
+  --card:     rgba(255, 255, 255, .08);
+  --hero-grad: linear-gradient(to bottom right, #17130F 0%, #2B1B1C 33%, #3A2A20 67%, #303429 100%);
+  --btn-grad:  linear-gradient(to bottom right, #7B4348, #8E5732, #696D61);
+  --btn-fg:   #FFFFFF;
+  --ok:       #9FD9B4;
+  --err:      #F29A91;
+  --shadow:   0 28px 60px -30px rgba(0, 0, 0, .75);
+  --topbar-bg:       rgba(23, 19, 15, .5);
+  --topbar-bg-stuck: rgba(23, 19, 15, .78);
 }
 
-* { box-sizing: border-box; }
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
+  background: var(--surface);
   scroll-behavior: smooth;
-  overscroll-behavior-y: none;     /* stop the rubber-band bounce that revealed the bg above the navbar */
-  /* Flat anchor only. The gradient itself lives on the already-fixed .atmosphere
-     layer below — background-attachment:fixed forces a full repaint of the
-     gradient on every scroll frame, which is the single worst scroll cost on a
-     page like this. A fixed element composites once and then just stays put. */
-  background: var(--cream);
+  overscroll-behavior-y: none;
 }
-
 body {
   margin: 0;
-  background: transparent;   /* let the root-canvas gradient show through */
-  color: var(--ink);
+  background: transparent;              /* the fixed atmosphere shows through */
+  color: var(--fg);
   font-family: var(--sans);
-  font-size: clamp(16px, 1.05vw + 13px, 19px);
-  line-height: 1.55;
+  font-size: clamp(16px, .9vw + 12px, 17px);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
+strong, em { font-weight: 500; font-style: normal; }   /* emphasis is Medium, never Bold or Italic */
+h1, h2, h3 { text-wrap: balance; }
+img { max-width: 100%; }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; border-radius: 4px; }
 
-em { font-style: normal; font-weight: 500; }   /* brand: no italics — emphasis via Medium */
+.wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
+.section { padding-block: clamp(56px, 8vw, 112px); }
+#how, #waitlist, #story { scroll-margin-top: calc(var(--topbar-h) + 8px); }
 
-/* Skip link — visually hidden until focused, so keyboard users can bypass the header. */
+/* Skip link — visually hidden until focused. */
 .skip-link {
-  position: absolute;
-  left: 12px;
-  top: -52px;
-  z-index: 100;
-  background: var(--ink);
-  color: var(--cream);
-  font-family: var(--mono);
-  font-size: .8rem;
-  padding: 9px 16px;
-  border-radius: 10px;
-  text-decoration: none;
+  position: absolute; left: 12px; top: -52px; z-index: 100;
+  background: var(--fg); color: var(--surface);
+  font-family: var(--mono); font-size: .8rem;
+  padding: 9px 16px; border-radius: 10px; text-decoration: none;
   transition: top .2s var(--ease);
 }
-.skip-link:focus { top: 12px; outline: 2px solid var(--cream); outline-offset: 2px; }
+.skip-link:focus { top: 12px; outline: 2px solid var(--surface); outline-offset: 2px; }
 
-/* ---------- Atmosphere: brand gradient + mosaic bands + grain ---------- */
+/* ---------- Atmosphere: the UI background, as the guide builds it (V1.3 p18 · 04) ----------
+   The mode's hero gradient at 25% over its surface, drawn corner to corner:
+   ZuZu over Paper, Night over Ink. Grain at 25%: the one grain tile, overlay
+   blend, tiled at 64px. Nothing else. It is the same recipe, stop for stop,
+   as bg-wash in the app. Pinned to the viewport so the screen you are on
+   always carries the whole sweep; one fixed layer, composited once. */
 .atmosphere {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
+  position: fixed; inset: 0; z-index: -1;
   pointer-events: none;
-  /* Primary gradient (light/fan) — ZuZu brand stops on the #F6F2F0 anchor. */
-  background:
-    radial-gradient(68% 58% at 8% 4%, rgba(189,193,222,.55) 0%, rgba(189,193,222,0) 60%),
-    linear-gradient(133deg, #eed7e3 0%, #d7c3dd 26%, #bdc1de 50%, #f1e5e8 76%, #f6f2f0 100%);
+  isolation: isolate;
+  background: var(--surface);
 }
-/* DARK (artist): warm brown + forest glow -> black. */
-:root[data-theme="dark"] .atmosphere {
-  background:
-    radial-gradient(72% 60% at 14% 0%, rgba(58,42,32,.6) 0%, rgba(58,42,32,0) 60%),
-    radial-gradient(58% 54% at 96% 6%, rgba(48,52,41,.5) 0%, rgba(48,52,41,0) 58%),
-    linear-gradient(150deg, #3a2a20 0%, #232726 30%, #2b1b1c 56%, #303429 80%, #000000 100%);
+.atmosphere::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: var(--hero-grad);
+  opacity: var(--wash);
 }
-
-/* Mosaic — the brand's "quantize the gradient into soft horizontal bands".
-   A stepped overlay in the mode's family; no raster, no blur (perf). */
-/* Bands hold a plateau, then ramp into the next one, so the blend reads as a
-   soft quantization rather than hard stripes. */
-.mosaic {
-  position: absolute;
-  inset: 0;
-  opacity: .16;
-  background: linear-gradient(
-    to bottom,
-    #eed7e3 0 5%,  #e6cfdf 14% 19%, #d7c3dd 28% 33%, #c9c3de 42% 47%,
-    #bfc2de 56% 61%, #cbccdf 70% 74%, #ddd5e3 82% 86%, #f1e6e9 93% 96%,
-    #f6f2f0 100%);
-}
-:root[data-theme="dark"] .mosaic {
-  opacity: .18;
-  background: linear-gradient(
-    to bottom,
-    #3a2a20 0 5%,  #2f2620 14% 19%, #232726 28% 33%, #29201c 42% 47%,
-    #2b1b1c 56% 61%, #2a251d 70% 74%, #303429 82% 86%, #14120d 93% 96%,
-    #000000 100%);
-}
-
-/* Static tiled noise — replaces the costly live feTurbulence filter. */
 .grain {
-  position: absolute;
-  inset: 0;
-  background: url("assets/noise.png") repeat;
-  background-size: 180px 180px;
-  opacity: var(--grain-opacity);
+  position: absolute; inset: 0;
+  background-image: var(--grain);
+  background-size: 64px 64px;
+  mix-blend-mode: overlay;
+  opacity: .25;
 }
 
-/* ---------- Layout primitives ---------- */
-section {
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding-inline: clamp(20px, 5vw, 40px);
+/* ---------- Type roles ---------- */
+.label {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: .75rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--label);
+  margin: 0 0 14px;
 }
+.section-title {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: clamp(1.55rem, 3vw, 2.4rem);
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin: 0 0 16px;
+  max-width: 24ch;
+}
+.lead {
+  font-size: clamp(1.05rem, 1.2vw, 1.2rem);
+  line-height: 1.45;
+  color: var(--fg-70);
+  max-width: 52ch;
+  margin: 0;
+}
+.lead strong { color: var(--fg); }
 
-/* ---------- Sticky top bar (holds the persistent role switch) ---------- */
-/* Transparent sticky wrapper — the visible bar is the floating island inside. */
+/* ---------- Sticky top bar ---------- */
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  position: sticky; top: 0; z-index: 50;
   padding: 12px clamp(12px, 3vw, 24px) 0;
-  background: transparent;
 }
-/* The floating, frosted, rounded island. */
 .topbar__inner {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 9px 12px 9px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  padding: 9px 10px 9px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
   background: var(--topbar-bg);
-  backdrop-filter: blur(16px) saturate(1.15);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
-  border: 1px solid var(--topbar-border);
+  /* The one backdrop-filter on the page; small radius, no saturate(). */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--hairline);
   border-radius: 16px;
-  box-shadow: 0 14px 34px -20px rgba(20, 17, 15, .5);
-  transition: background .3s var(--ease), box-shadow .3s var(--ease);
+  transition: background .3s var(--ease);
 }
-.topbar.is-stuck .topbar__inner {
-  background: var(--topbar-bg-stuck);
-  box-shadow: 0 18px 42px -20px rgba(20, 17, 15, .6);
-}
-.brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--ink); }
-/* Touch target padded out invisibly: inset on a pseudo-element rather than real
-   padding, so the topbar keeps its height (the hero's min-height calc depends
-   on it) while the tappable area clears 44px. */
-.brand { position: relative; }
-.brand::after { content: ""; position: absolute; inset: -8px -10px; }
+.topbar.is-stuck .topbar__inner { background: var(--topbar-bg-stuck); }
+
+.brand { position: relative; display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--fg); }
+.brand::after { content: ""; position: absolute; inset: -8px -10px; }   /* 44px touch target without growing the bar */
 .brand__mark { width: 28px; height: 28px; }
 :root[data-theme="dark"] .brand__mark { filter: invert(1); }
 .brand__word { font-family: var(--mono); font-weight: 500; font-size: 1.15rem; letter-spacing: -.05em; }
 
-.topbar__right { display: flex; align-items: center; gap: 14px; }
-.rolebar__label { font-family: var(--mono); font-size: .76rem; color: var(--ink-soft); }
-.topbar__cta {
-  font-family: var(--mono);
-  font-size: .78rem;
-  font-weight: 400;
-  text-decoration: none;
-  color: var(--ink);
-  border: 1.5px solid var(--ink);
-  border-radius: 10px;
-  padding: 8px 18px;
-  transition: background .25s var(--ease), color .25s var(--ease);
+.topbar__right { display: flex; align-items: center; gap: 12px; }
+
+/* Tertiary: plain text. */
+.rolelink {
+  border: 0; background: transparent;
+  font-family: var(--sans); font-size: .875rem;
+  color: var(--fg-70);
+  cursor: pointer;
+  padding: 10px 6px;
+  text-decoration: underline; text-underline-offset: 3px;
+  text-decoration-color: var(--outline);
 }
-.topbar__cta:hover { background: var(--ink); color: var(--cream); }
+.rolelink:hover { color: var(--fg); }
 
-/* Anchored sections clear the sticky header */
-.how, .waitlist { scroll-margin-top: 88px; }
+/* Secondary: 1.5px outline at 50%, no fill. */
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--sans); font-weight: 500; font-size: .9rem;
+  color: var(--fg);
+  background: transparent;
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius);
+  padding: 9px 18px;
+  min-height: 42px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .2s var(--ease), background .2s var(--ease);
+}
+.btn-secondary:hover { border-color: var(--fg); background: var(--rest); }
 
-/* ---------- Hero ---------- */
-/* The hero owns the first screen, so the next section's kicker can never peek
-   above the fold — padding alone can't guarantee that, since it depends on the
-   visitor's viewport height. 84px is the sticky topbar's footprint. svh (not vh)
-   so mobile browser chrome doesn't push content off-screen; the vh line is the
-   fallback for anything that doesn't know svh. */
+/* The header's Join the waitlist is a Primary: the .btn recipe, at the
+   header's size. */
+.btn.topbar__cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 42px;
+  padding: 9px 18px;
+  font-size: .9rem;
+  text-decoration: none;
+}
+
+/* ---------- Hero: the cover ----------
+   Owns the first screen (svh so phone chrome doesn't push the form off), content
+   vertically centred. Full-strength mode gradient, dissolving into the page. */
 .hero {
-  min-height: calc(100vh - 84px);
-  min-height: calc(100svh - 84px);
-  /* Centre the content in that box rather than letting it sit at the top with
-     all the slack below it. Self-adjusting: on a tall screen it drops further,
-     on a short one the content simply grows past the min-height and flows. */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-top: clamp(40px, 6vw, 80px);
-  padding-bottom: clamp(40px, 6vw, 80px);
+  position: relative;
+  z-index: 0;
+  min-height: calc(100vh - var(--topbar-h));
+  min-height: calc(100svh - var(--topbar-h));
+  display: flex; align-items: center;
+  padding-block: clamp(40px, 6vw, 80px);
+}
+.hero__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
 }
 .eyebrow {
   font-family: var(--mono);
-  font-size: .76rem;
-  letter-spacing: .04em;
+  font-weight: 500;
+  font-size: .75rem;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--ink-soft);
-  font-weight: 400;
+  color: var(--fg-70);                  /* on gradients, labels are Ink at 70% */
   margin: 0 0 22px;
 }
 .hero__title {
   font-family: var(--mono);
   font-weight: 500;
-  font-size: clamp(1.95rem, 5.2vw, 3.5rem);
-  line-height: 1.06;
+  font-size: clamp(2rem, 4.6vw, 3.6rem);
+  line-height: 1.08;
   letter-spacing: -.02em;
-  margin: 0 0 26px;
+  margin: 0 0 24px;
+  display: grid;                         /* variants overlap in one cell: no shift on toggle */
 }
-.hero__title em { font-weight: 500; }
-/* Overlap the two title variants in one grid cell so the block is always the
-   height of the taller one — keeps everything below from shifting on toggle. */
-.hero__title { display: grid; }
-.hero__title > .r-artist, .hero__title > .r-fan { grid-area: 1 / 1; }
-/* Both ledes share one grid cell → the wrapper is the height of the taller
-   variant, so the email form below stays in a fixed position across views. */
-.hero__ledes { display: grid; margin: 0 0 34px; }
+.hero__title > span { grid-area: 1 / 1; }
+.hero__ledes { display: grid; margin: 0 0 32px; }
 .hero__lede {
   grid-area: 1 / 1;
-  max-width: 46ch;
-  font-size: clamp(1.05rem, 1.4vw, 1.28rem);
-  color: var(--ink-soft);
+  max-width: 44ch;
+  font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+  line-height: 1.45;
+  color: var(--fg-70);
   margin: 0;
 }
-.hero__lede strong { color: var(--ink); font-weight: 500; }
+.hero__lede strong { color: var(--fg); }
 
-/* ---------- Waitlist form ---------- */
-.waitlist-form { max-width: 540px; }
-.waitlist-form--main { max-width: none; }
+.hero__visual { margin: 0; }
 
-.field {
-  display: flex;
-  gap: 8px;
-  background: var(--field-bg);
+/* Product screenshots (V1.3 p21): hairline, radius 12, soft shadow, no device frame. */
+.shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
   border: 1px solid var(--hairline);
-  border-radius: var(--radius);
-  padding: 7px 7px 7px 8px;
-  box-shadow: 0 10px 34px -22px rgba(20,17,15,.55);
-  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+  box-shadow: var(--shadow);
+  background: var(--card);
 }
-.field:focus-within { border-color: var(--ink); box-shadow: 0 14px 40px -22px rgba(20,17,15,.65); outline: 2px solid var(--ink); outline-offset: 2px; }
-.field__input {
-  flex: 1;
-  border: 0;
-  background: transparent;
-  font-family: var(--sans);
-  font-size: 1rem;          /* >=16px or iOS zooms the page on focus */
-  min-height: 44px;         /* WCAG 2.5.5 touch target */
-  color: var(--ink);
-  padding: 10px 14px;
-  min-width: 0;
-}
-.field__input:focus { outline: none; }
-.field__input::placeholder { color: var(--ink-faint); }
 
-/* Primary CTA — the "money moment": grainy brand gradient, borderless, radius 12. */
-.btn {
-  border: 0;
-  background: var(--btn-grad);
-  color: var(--btn-fg);
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: .9rem;
-  letter-spacing: -.01em;
-  padding: 13px 24px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: transform .18s var(--ease), filter .25s var(--ease);
+/* Phones: the top of the direct line screen rises from the bottom edge of the
+   first view and invites the scroll. Headline, field and button stay above it. */
+@media (max-width: 899px) {
+  .hero__visual { height: clamp(104px, 20svh, 184px); overflow: hidden; }
+  .hero__shot--back { display: none; }
+  .hero__shot--front {
+    width: min(300px, 82%);
+    margin-inline: auto;
+    border-bottom: 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: 0 -10px 36px -22px rgba(23, 19, 15, .4);
+  }
 }
-.btn:hover { filter: brightness(1.04) saturate(1.05); transform: translateY(-1px); }
-.btn:active { transform: translateY(0); }
-.btn[disabled] { opacity: .6; cursor: progress; }
+/* Wide: two whole screens, one size. The direct line in front; the artist's
+   profile behind it, showing the two thirds that carry the photo, the name
+   and the sleeves. --w is one screen, bound by width and height so the pair
+   always sits inside the first view. */
+@media (min-width: 900px) {
+  .hero__grid { grid-template-columns: minmax(0, 1fr) minmax(0, .92fr); }
+  .hero__visual {
+    --w: min(270px, 24vw, calc((100svh - var(--topbar-h) - 176px) / 2.174));
+    position: relative;
+    justify-self: end;
+    width: calc(var(--w) * 1.66);
+    height: calc(var(--w) * 2.174 + 56px);
+  }
+  .hero__shot { position: absolute; width: var(--w); height: auto; }
+  .hero__shot--back  { left: 0; top: 0; }
+  .hero__shot--front { left: calc(var(--w) * .66); top: 56px; }
+  .hero__title { font-size: clamp(2rem, 4.2vw, 3.2rem); }
+}
 
-.waitlist-form__note { font-family: var(--mono); font-size: .74rem; line-height: 1.5; color: var(--ink-faint); margin: 14px 4px 0; }
-.waitlist-form__status { font-size: .92rem; margin: 12px 4px 0; min-height: 1.2em; font-weight: 500; }
-.waitlist-form__status.is-error { color: #b23b3b; }
-.waitlist-form__status.is-ok { color: #2f7d52; }
-
-/* ---------- Role switch (segmented toggle) — brand pills ---------- */
-/* Primary pills: fully rounded (supporting pills are the radius-8 rectangles —
-   "only the shape differs"). Active is flat white with a 22% ink hairline;
-   at rest, an 8% fg fill under a 70% label. */
-.seg {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
-  border: 0;
-  border-radius: 999px;
-  padding: 4px;
-}
-.seg__btn {
-  position: relative;
-  z-index: 1;
-  border: 0;
-  background: transparent;
-  font-family: var(--mono);
-  cursor: pointer;
-  padding: 8px 20px;
-  border-radius: 999px;
-  font-size: .78rem;
-  font-weight: 500;
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
-  text-align: center;
-  white-space: nowrap;
-  transition: color .25s var(--ease);
-}
-.seg__btn[aria-pressed="true"] { color: #14110f; }   /* dark label on the white active pill (both modes) */
-.seg__pill {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  left: 4px;
-  width: calc(50% - 4px);
-  background: #ffffff;
-  box-shadow: inset 0 0 0 1.5px var(--ring);   /* app pattern: selection is the ring */
-  border-radius: 999px;
-  transition: transform .3s var(--ease);
-}
-body[data-role="artist"] .seg__pill { transform: translateX(100%); }
-
-/* Role-aware content visibility */
+/* ---------- Role / variant visibility ---------- */
 body[data-role="artist"] .r-fan,
-body[data-role="fan"] .r-artist { display: none; }
+body[data-role="fan"]    .r-artist { display: none !important; }
 
-/* In the hero, keep the inactive variant in the layout (hidden, not removed)
-   so the headline + lede blocks stay the height of the taller variant and the
-   email form never shifts between views. */
+/* In the hero the inactive role's copy stays in layout (hidden, not removed) so
+   the title and lede blocks keep the height of the taller variant and the form
+   never moves between views. */
 body[data-role="artist"] .hero__title .r-fan,
 body[data-role="fan"]    .hero__title .r-artist,
 body[data-role="artist"] .hero__ledes .r-fan,
 body[data-role="fan"]    .hero__ledes .r-artist {
-  display: block;
+  display: block !important;
   visibility: hidden;
 }
+/* Ad variants: all four headlines ship in the DOM, CSS picks one before paint. */
+.v-default, .v-ad1, .v-ad2, .v-ad4 { display: none; }
+:root[data-variant="default"] .v-default,
+:root[data-variant="ad1"]     .v-ad1,
+:root[data-variant="ad2"]     .v-ad2,
+:root[data-variant="ad4"]     .v-ad4 { display: block; }
 
-/* Smooth artist/fan crossfade via the View Transitions API.
-   The whole page is captured as the default 'root' group: unchanged areas are
-   identical across both snapshots (so they read as static) while the copy that
-   changes visibly crossfades. The toggle pills get their own names so they keep
-   sliding rather than dissolving. */
+/* Artist/fan crossfade via the View Transitions API. */
 @supports (view-transition-name: zuzu) {
-  .topbar .seg__pill { view-transition-name: vt-pill; }
-
   ::view-transition-old(root), ::view-transition-new(root) {
-    animation-duration: .42s;
-    animation-timing-function: cubic-bezier(.2, .7, .2, 1);
-  }
-  ::view-transition-group(vt-pill) {
-    animation-duration: .42s;
-    animation-timing-function: cubic-bezier(.2, .7, .2, 1);
+    animation-duration: .4s;
+    animation-timing-function: var(--ease);
   }
 }
 
-/* ---------- Problem ---------- */
-/* Extra top padding so the section still lands with air beneath the fold, not
-   flush against it, once you start scrolling. */
-.problem { padding-block: clamp(44px, 7vw, 104px) clamp(30px, 5vw, 66px); }
-.section-kicker {
+/* ---------- Forms ---------- */
+.waitlist-form { max-width: 540px; }
+.field {
+  display: flex; gap: 6px;
+  background: var(--card);
+  border: 0;                            /* no outline on fields (house rule) */
+  border-radius: var(--radius);
+  padding: 6px;
+  box-shadow: 0 12px 32px -20px rgba(23, 19, 15, .4);
+}
+.field:focus-within { outline: 2px solid var(--fg); outline-offset: 2px; }
+.field__input {
+  flex: 1; min-width: 0;
+  border: 0; background: transparent;
+  font-family: var(--sans); font-size: 1rem;    /* >=16px or iOS zooms on focus */
+  min-height: 44px;
+  color: var(--fg);
+  padding: 8px 14px;
+}
+.field__input:focus { outline: none; }
+.field__input::placeholder { color: var(--fg-60); }
+
+/* Primary: the mode's button gradient at 135° with grain at 50%, no outline.
+   One per screen. The grain sits between the gradient and the label. */
+.btn {
+  position: relative; isolation: isolate; overflow: hidden;
+  border: 0;
+  background: var(--btn-grad);
+  color: var(--btn-fg);
+  font-family: var(--sans); font-weight: 500; font-size: .9375rem;
+  padding: 11px 22px;
+  min-height: 44px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform .18s var(--ease), filter .2s var(--ease);
+}
+.btn::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background-image: var(--grain);
+  background-size: 64px 64px;
+  mix-blend-mode: overlay;
+  opacity: .5;
+}
+.btn:hover { filter: brightness(1.03); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn[disabled] { opacity: .6; cursor: progress; }
+
+.waitlist-form__note { font-size: .8125rem; line-height: 1.5; color: var(--fg-60); margin: 12px 4px 0; }
+.waitlist-form__status { font-size: .9375rem; margin: 10px 4px 0; min-height: 1.2em; font-weight: 500; }
+.waitlist-form__status.is-error { color: var(--err); }
+.waitlist-form__status.is-ok { color: var(--ok); }
+
+/* ---------- The story ---------- */
+.story { padding-block: clamp(48px, 7vw, 96px) 0; }
+.story__intro { margin-bottom: clamp(28px, 4vw, 48px); }
+.story__layout { display: grid; grid-template-columns: minmax(0, 1fr); }
+.story__beats { display: grid; }
+.beat { padding-block: clamp(32px, 5vw, 56px); border-top: 1px solid var(--hairline); }
+.beat:first-child { border-top: 0; padding-top: clamp(8px, 2vw, 16px); }
+.beat__label { margin-bottom: 14px; }
+/* Phones: the whole screen under its beat, one width for all six. */
+.beat__shot { width: min(240px, 66%); margin-top: 28px; }
+.story__stage { display: none; }
+.beat__title {
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+  line-height: 1.18; letter-spacing: -.02em;
+  margin: 0 0 14px;
+  max-width: 17ch;
+}
+.beat__text { color: var(--fg-70); font-size: 1.0625rem; line-height: 1.5; max-width: 38ch; margin: 0; }
+.story__end { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: clamp(28px, 4vw, 44px); }
+.story__note { margin: 0; font-size: .8125rem; color: var(--fg-60); }
+
+@media (min-width: 900px) {
+  .story__layout { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); column-gap: clamp(40px, 6vw, 96px); }
+  .beat {
+    border-top: 0;
+    min-height: 62vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding-block: clamp(40px, 7vh, 88px);
+  }
+  .beat:first-child { padding-top: 0; }
+  /* The last beat is as tall as the stage, so the phone stays pinned until
+     the last beat is centred beside it instead of being pushed up under the
+     header while you are still reading it. */
+  .beat:last-child { padding-bottom: 0; min-height: calc(100vh - var(--topbar-h) - 24px); }
+  .beat__shot { display: none; }
+  /* One phone rides along and crossfades to the beat in front of you. Every
+     screen is the same 402 by 874, so nothing changes size between beats. */
+  .story__stage {
+    display: flex; align-items: center; justify-content: center;
+    position: sticky;
+    top: calc(var(--topbar-h) + 12px);
+    align-self: start;
+    height: calc(100vh - var(--topbar-h) - 24px);
+  }
+  /* Smaller than the screen it rides in: about two thirds of the viewport,
+     so the copy beside it stays the thing you read. */
+  .stage {
+    display: grid;
+    height: min(560px, calc(100vh - var(--topbar-h) - 180px));
+    aspect-ratio: 402 / 874;
+  }
+  .stage__shot {
+    grid-area: 1 / 1;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity .3s var(--ease);
+  }
+  .stage__shot.is-active { opacity: 1; }
+}
+
+/* ---------- The gap ---------- */
+.gap__title {
   font-family: var(--mono);
   font-weight: 500;
-  font-size: .82rem;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  color: var(--periwinkle);
+  font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  max-width: 26ch;
   margin: 0 0 18px;
 }
-/* Little blueprint tick before technical labels */
-.section-kicker::before { content: "▚ "; opacity: .8; }
-.problem__lead {
-  font-family: var(--mono);
-  font-weight: 400;
-  font-size: clamp(1.35rem, 3vw, 2.1rem);
-  line-height: 1.22;
-  letter-spacing: -.01em;
-  max-width: 32ch;
-  margin: 0 0 8px;
-}
-.pullquote {
-  margin: 0;
-  max-width: 44ch;
-  padding-left: 26px;
-  border-left: 1px solid var(--hairline);
-  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
-  line-height: 1.35;
-  color: var(--ink-soft);
-}
-.pullquote strong { color: var(--ink); font-weight: 500; }
-
-/* ---------- Shared section heads ---------- */
-.section-title {
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: clamp(1.55rem, 3.4vw, 2.5rem);
-  line-height: 1.1;
-  letter-spacing: -.02em;
-  margin: 0 0 16px;
-  max-width: 20ch;
-}
-.section-sub { color: var(--ink-soft); max-width: 46ch; margin: 0 0 46px; font-size: 1.08rem; }
-
-/* ---------- Problem stats ---------- */
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin: 44px 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  margin: 36px 0;
 }
-.stat {
-  border-top: 1px solid var(--hairline);
-  padding-top: 16px;
-}
+.stat { border-top: 2px solid var(--sage); padding-top: 18px; }   /* accent rules: 2px Sage */
 .stat__num {
   display: block;
-  font-family: var(--mono);
-  font-weight: 500;
+  font-family: var(--mono); font-weight: 500;
   font-size: clamp(1.7rem, 4vw, 2.5rem);
-  line-height: 1;
-  letter-spacing: -.02em;
-  margin-bottom: 14px;
+  line-height: 1; letter-spacing: -.02em;
+  margin-bottom: 12px;
 }
-.stat__cap { font-family: var(--mono); color: var(--ink-soft); font-size: .78rem; line-height: 1.5; }
-.stat__cap strong { color: var(--ink); font-weight: 500; }
-
-/* ---------- Fan perks ---------- */
-.perks {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin: 40px 0 36px;
-}
-.perk {
-  background: var(--card-bg);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-lg);
-  padding: clamp(20px, 2.4vw, 30px);
-}
-.perk__title {
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
-  letter-spacing: -.01em;
-  margin: 0 0 9px;
-}
-.perk p { margin: 0; color: var(--ink-soft); font-size: .96rem; }
+.stat__cap { font-size: .9375rem; line-height: 1.5; color: var(--fg-70); }
+.stat__cap strong { color: var(--fg); }
 
 /* ---------- How it works ---------- */
-.how { padding-block: clamp(32px, 5vw, 70px); }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.steps { list-style: none; margin: 24px 0 0; padding: 0; display: grid; }
 .step {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: clamp(18px, 3vw, 38px);
-  align-items: start;
-  background: var(--card-bg);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-lg);
-  padding: clamp(24px, 3vw, 36px);
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 16px;
+  padding: 22px 0;
+  border-top: 1px solid var(--hairline);
 }
-.step__n {
-  font-family: var(--mono);
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
-  font-weight: 500;
-  color: var(--periwinkle);
-  line-height: 1;
-}
+.step__n { font-family: var(--mono); font-weight: 500; font-size: .75rem; color: var(--label); padding-top: .35em; }
 .step__title {
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: clamp(1.2rem, 2vw, 1.5rem);
-  letter-spacing: -.01em;
-  margin: 0 0 10px;
+  font-family: var(--mono); font-weight: 500;
+  font-size: 1.125rem; letter-spacing: -.01em;
+  margin: 0 0 8px;
 }
-.step__body p { margin: 0; color: var(--ink-soft); max-width: 60ch; }
-.step__body strong { color: var(--ink); font-weight: 500; }
+.step__body p { margin: 0; color: var(--fg-70); font-size: .9875rem; max-width: 46ch; }
+.step__body strong { color: var(--fg); }
+@media (min-width: 760px) {
+  .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  .step { display: block; border-top: 2px solid var(--sage); padding: 18px 0 0; }
+  .step__n { display: block; margin-bottom: 14px; padding-top: 0; }
+}
 
-/* ---------- Waitlist section ---------- */
-.waitlist { padding-block: clamp(14px, 2vw, 28px) clamp(52px, 7vw, 92px); }
-.waitlist__inner {
-  /* The one gradient "primary" per screen — the money moment.
-     Brand primary family, borderless. */
-  background:
-    linear-gradient(135deg, #eed7e3 0%, #d7c3dd 46%, #bdc1de 100%),
-    #f1e5e8;
-  border: 0;
-  border-radius: var(--radius-lg);
-  padding: clamp(32px, 5vw, 64px);
-  box-shadow: 0 40px 90px -60px rgba(20,17,15,.5);
+/* ---------- Join: the one highlighted card ---------- */
+.join { padding-top: clamp(24px, 4vw, 56px); }
+.join__card {
+  background: var(--hero-grad);
+  border-radius: var(--radius);
+  padding: clamp(28px, 5vw, 60px);
+  box-shadow: var(--shadow);
+  max-width: 820px;
 }
-:root[data-theme="dark"] .waitlist__inner {
-  background:
-    linear-gradient(135deg, #2c3f34 0%, #303429 55%, #232726 100%),
-    #1d130d;
-}
-.waitlist__title {
-  font-family: var(--mono);
-  font-weight: 500;
+.join__label { color: var(--fg-70); }        /* on gradients, labels are Ink at 70% */
+.join__title {
+  font-family: var(--mono); font-weight: 500;
   font-size: clamp(1.8rem, 4vw, 2.7rem);
-  letter-spacing: -.02em;
+  letter-spacing: -.02em; line-height: 1.1;
   margin: 0 0 12px;
 }
-.waitlist__sub { color: var(--ink-soft); max-width: 42ch; margin: 0 0 32px; }
-.waitlist .field { box-shadow: 0 14px 40px -26px rgba(20,17,15,.7); }
-.waitlist .field { max-width: 520px; }
+.join__sub { color: var(--fg-70); max-width: 44ch; margin: 0 0 28px; }
+.join .field { box-shadow: 0 16px 40px -26px rgba(23, 19, 15, .6); }
+
+.after { margin-top: 28px; }
+.after__label { display: block; font-size: .875rem; color: var(--fg-70); margin: 0 0 10px; }
+.sharebtn { margin-top: 14px; }
 
 /* ---------- Footer ---------- */
 .footer {
-  background: var(--footer-bg);
-  color: var(--footer-fg);
-  text-align: center;
-  padding: clamp(44px, 6vw, 70px) 20px;
+  background: #17130F;
+  color: #FFFFFF;
+  padding: clamp(44px, 6vw, 72px) 0;
+  border-top: 1px solid var(--hairline);
 }
-.footer__brand { display: inline-flex; align-items: center; gap: 11px; font-family: var(--mono); font-weight: 500; font-size: 1.1rem; letter-spacing: -.05em; margin-bottom: 18px; }
-.footer__mark { width: 26px; height: 26px; filter: invert(1); }
-.footer__links { margin: 0 0 20px; display: flex; gap: 20px; justify-content: center; }
+.footer__inner { display: grid; gap: 18px; justify-items: start; }
+.footer__brand { display: inline-flex; align-items: center; gap: 11px; font-family: var(--mono); font-weight: 500; font-size: 1.1rem; letter-spacing: -.05em; }
+.footer__mark { width: 26px; height: 26px; }
+.footer__line { margin: 0; font-family: var(--mono); font-size: .9rem; color: rgba(255, 255, 255, .7); }
+.footer__links { display: flex; gap: 22px; }
 .footer__links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--mono);
-  font-size: .78rem;
-  color: rgba(246,242,240,.78);
+  position: relative;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--sans); font-size: .875rem;
+  color: rgba(255, 255, 255, .7);
   text-decoration: none;
   transition: color .2s var(--ease);
 }
-.footer__links a:hover { color: var(--footer-fg); }
-.footer__links a:focus-visible { outline: 2px solid var(--footer-fg); outline-offset: 4px; border-radius: 4px; }
+.footer__links a::after { content: ""; position: absolute; inset: -13px -12px; }   /* touch target */
+.footer__links a:hover { color: #FFFFFF; }
+.footer__links a:focus-visible { outline-color: #FFFFFF; }
 .footer__icon { width: 16px; height: 16px; flex: none; }
-.footer__links a { position: relative; }
-.footer__links a::after { content: ""; position: absolute; inset: -13px -12px; }
-.footer__legal { font-family: var(--mono); font-size: .72rem; letter-spacing: .02em; color: rgba(246,242,240,.55); margin: 0; }
-
-/* ---------- Responsive ---------- */
-@media (max-width: 960px) {
-  .perks { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 720px) {
-  .stats { grid-template-columns: 1fr; gap: 26px; }
-  .perks { grid-template-columns: 1fr; }
-  .step { grid-template-columns: 1fr; gap: 8px; }
-  .pullquote { margin-left: 0; }
-  .rolebar__label, .topbar__cta { display: none; }
-  /* DM Mono is wide — let the hero wrap naturally instead of forcing the desktop
-     breaks. Render the <br> as a space (not display:none, which would butt the
-     two words together). */
-  .hero__break { content: " "; display: inline; font-size: 0; }
-  .hero__break::after { content: " "; font-size: 1rem; }
-  .hero__title { font-size: clamp(1.6rem, 7.4vw, 2.2rem); }
-  .seg__btn { padding: 8px 17px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
-  .field { flex-wrap: wrap; border-radius: var(--radius-lg); }
-  .field__input { flex-basis: 100%; }
-  .btn { flex: 1; }
-}
+.footer__legal { font-size: .8125rem; color: rgba(255, 255, 255, .6); margin: 0; }
 
 /* ---------- Entrance motion ----------
-   Brand guide: motion "settles within 400 ms" and respects prefers-reduced-motion.
-   Driven by IntersectionObserver (no scroll listener, no rAF) and limited to
-   opacity/transform so it stays on the compositor. The hidden state is gated on
-   the .js-reveal class that script.js adds, so with JS off nothing is hidden. */
-/* No will-change and no scale, deliberately:
-   - will-change in the resting state pins a compositor layer for every target
-     from first paint (15 of them here), on a page that already pays for a fixed
-     background and a backdrop-filtered topbar.
-   - scaling a text block forces the glyphs to re-rasterise on every frame of the
-     transition. translate alone stays on the compositor. */
+   One-shot IntersectionObserver (script.js), opacity + translate only so it
+   stays on the compositor; no will-change, no scale. Hidden state is gated on
+   .js-reveal so nothing is hidden when JS is off. */
 .js-reveal [data-reveal] {
   opacity: 0;
-  transform: translateY(38px);
-  transition: opacity .72s var(--ease), transform .72s var(--ease);
-  transition-delay: .1s;              /* a beat after it enters, before it moves */
+  transform: translateY(20px);
+  transition: opacity .4s var(--ease), transform .4s var(--ease);
+  transition-delay: .03s;
 }
-.js-reveal [data-reveal].is-in {
-  opacity: 1;
-  transform: none;
-}
-/* Gentle stagger within a group — capped so nothing waits long. */
-.js-reveal [data-reveal]:nth-child(2) { transition-delay: .19s; }
-.js-reveal [data-reveal]:nth-child(3) { transition-delay: .28s; }
-.js-reveal [data-reveal]:nth-child(4) { transition-delay: .37s; }
-.js-reveal [data-reveal]:nth-child(5) { transition-delay: .46s; }
-.js-reveal [data-reveal]:nth-child(6) { transition-delay: .55s; }
+.js-reveal [data-reveal].is-in { opacity: 1; transform: none; }
+.js-reveal [data-reveal]:nth-child(2) { transition-delay: .08s; }
+.js-reveal [data-reveal]:nth-child(3) { transition-delay: .13s; }
+.js-reveal [data-reveal]:nth-child(4) { transition-delay: .18s; }
+.js-reveal [data-reveal]:nth-child(5) { transition-delay: .23s; }
+.js-reveal [data-reveal]:nth-child(6) { transition-delay: .28s; }
 
-/* ---------- Motion preference ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; }
-  /* Critical: without this the reveal state would leave content stuck at opacity 0. */
   .js-reveal [data-reveal] { opacity: 1; transform: none; }
 }
 
-/* ====================================================================
-   Centered layout — all content centered (both fan/artist views + themes).
-   ==================================================================== */
-.hero,
-.problem,
-.how,
-.waitlist__inner { text-align: center; }
+/* ---------- Responsive ---------- */
+@media (max-width: 720px) {
+  .stats { grid-template-columns: 1fr; gap: 22px; }
+  .topbar__cta { display: none; }
+  /* DM Mono is wide: let the headline wrap naturally instead of forcing the
+     desktop breaks. The <br> renders as a space, not nothing. */
+  .hero__break { content: " "; display: inline; font-size: 0; }
+  .hero__break::after { content: " "; font-size: 1rem; }
+  .hero__title { font-size: clamp(1.7rem, 7.4vw, 2.3rem); }
+  .field { flex-wrap: wrap; }
+  .field__input { flex-basis: 100%; }
+  .btn { flex: 1; }
+}
+/* Phones inside the Instagram/Facebook browser lose height to their chrome;
+   these caps keep the headline, lede, field and button above the fold. */
+@media (max-width: 480px) {
+  .hero__title { font-size: clamp(1.6rem, 7.4vw, 2.1rem); line-height: 1.12; }
+  .hero__lede  { font-size: 1rem; line-height: 1.45; }
+  .eyebrow     { font-size: .6875rem; margin-bottom: 14px; }
+  .hero { padding-top: clamp(20px, 5vw, 36px); padding-bottom: clamp(24px, 6vw, 44px); }
+  .waitlist-form__note { font-size: .75rem; }
+}
 
-/* constrained text blocks keep their max-width but now center horizontally */
-.hero__lede,
-.problem__lead,
-.section-title,
-.section-sub,
-.waitlist__sub,
-.step__body p,
-.pullquote { margin-inline: auto; }
+/* ---------- Studio: tabs over full-window screens ---------- */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: clamp(28px, 4vw, 44px) 0 0; }
+/* Rest: fill at 8%, label at 70. Selected: a white pill with a 1.5px ring in
+   the mode's button colours (p17). The transparent border keeps both the same size. */
+.tab {
+  font-family: var(--sans); font-weight: 500; font-size: .875rem;
+  color: var(--fg-70);
+  background: var(--rest);
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  padding: 8px 16px;
+  min-height: 40px;
+  cursor: pointer;
+  transition: color .2s var(--ease);
+}
+.tab:hover { color: var(--fg); }
+.tab[aria-selected="true"] {
+  color: var(--ink);
+  background: linear-gradient(#FFFFFF, #FFFFFF) padding-box, var(--btn-grad) border-box;
+}
+.panels { margin-top: clamp(24px, 3vw, 36px); display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(40px, 6vw, 72px); }
+.panel { min-width: 0; }
+.js-tabs .panels { gap: 0; }
+.panel__copy { margin-bottom: 20px; }
+.panel__title {
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(1.25rem, 1.9vw, 1.6rem); line-height: 1.25; letter-spacing: -.015em;
+  margin: 0 0 8px;
+}
+.panel__text { margin: 0; color: var(--fg-70); font-size: 1.0625rem; max-width: 56ch; }
+/* A desktop window shrunk to a phone is unreadable, so on narrow screens the
+   frame scrolls sideways at a legible size instead. */
+.panel__frame { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius); }
+.panel__shot { min-width: 720px; }
+@media (min-width: 900px) {
+  .panel__frame { overflow: visible; }
+  .panel__shot { min-width: 0; }
+}
 
-/* hero: center the overlapped lede variants + the form + the input pill */
-.hero__ledes { justify-items: center; }
-.waitlist-form { margin-inline: auto; }
-.field { margin-inline: auto; }
+@media (max-width: 899px) {
+  .hero { align-items: stretch; padding-bottom: 0; }
+  .hero__grid { grid-template-rows: 1fr auto; row-gap: clamp(20px, 5vw, 32px); }
+  .hero__copy { align-self: center; }
+}
 
-/* pullquote: drop the left blueprint border when centered */
-.pullquote { border-left: 0; padding-left: 0; }
-
-/* how-it-works: stack the step number above its body, centered */
-.step { grid-template-columns: 1fr; justify-items: center; gap: 6px; }
-
-/* stats + perks: center each cell's content */
-.stat, .perk { text-align: center; }
+/* ---------- The join card sits on the page's centre line ---------- */
+.join__card { margin-inline: auto; text-align: center; }
+.join__sub, .join .waitlist-form { margin-inline: auto; }

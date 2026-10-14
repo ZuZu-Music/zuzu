@@ -5,43 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" /><!-- pre-MVP: remove at real launch -->
 
-  <title>ZuZu — The relationship infrastructure for artists and their fans</title>
-  <meta name="description" content="ZuZu is where independent artists are discovered by new fans, the ones who love them get closer, and the artist finally owns who their fans are — names and contact they keep, not numbers on someone else's dashboard." />
+  <title>ZuZu — Get closer than a follow</title>
+  <meta name="description" content="Hear new music before it’s released, get a direct line to the artists you love, and find the other fans who hear it the way you do. $2 a month for one artist’s community. Streaming stays free." />
 
   <link rel="canonical" href="https://zuzu.music/" />
 
   <!-- Open Graph / social -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="ZuZu — Your audience should belong to you" />
-  <meta property="og:description" content="Get discovered, get closer to the fans who love you, and own that relationship for good. The relationship infrastructure for artists and their fans." />
+  <meta property="og:title" content="ZuZu — Get closer than a follow" />
+  <meta property="og:description" content="New music before release, a direct line to the artist, and the people who hear it the way you do." />
   <meta property="og:image" content="https://zuzu.music/assets/zuzu-social.png" />
   <meta property="og:image:alt" content="ZuZu — the relationship infrastructure for artists and their fans" />
   <meta property="og:url" content="https://zuzu.music/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="ZuZu — Your audience should belong to you" />
-  <meta name="twitter:description" content="The relationship infrastructure for artists and their fans. Join the waitlist." />
+  <meta name="twitter:title" content="ZuZu — Get closer than a follow" />
+  <meta name="twitter:description" content="New music before release, a direct line to the artist, and the people who hear it the way you do." />
   <meta name="twitter:image" content="https://zuzu.music/assets/zuzu-social.png" />
 
   <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-  <meta name="theme-color" content="#f7f3ee" />
+  <meta name="theme-color" content="#F6F2F0" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css?v=202609110511" />
+  <!-- Variant is resolved before first paint so the ad's headline is the first
+       thing painted: no flash of the default, and no layout shift. Kept inline
+       and tiny on purpose; the full logic lives in script.js. -->
+  <script>
+    (function () {
+      try {
+        var v = new URLSearchParams(location.search).get("utm_content");
+        var known = { ad1: 1, ad2: 1, ad4: 1 };
+        document.documentElement.setAttribute("data-variant", known[v] ? v : "default");
+      } catch (e) {
+        document.documentElement.setAttribute("data-variant", "default");
+      }
+    })();
+  </script>
+
+  <!-- The direct line screen is the hero on every width: in front of the artist profile on wide screens, peeking under the form on phones. -->
+  <link rel="preload" as="image" href="assets/shot-line.webp" />
+  <link rel="stylesheet" href="styles.css?v=202610141736" />
 </head>
 <body data-role="fan">
   <a class="skip-link" href="#top">Skip to content</a>
-  <!-- Grain + gradient atmosphere -->
+
+  <!-- Page atmosphere: the ZuZu gradient at a quarter over Paper, with grain.
+       Fixed, so it composites once and never repaints on scroll. -->
   <div class="atmosphere" aria-hidden="true">
-    <div class="mosaic"></div>
     <div class="grain"></div>
   </div>
 
-  <!-- Sticky top bar with the persistent role switch -->
+  <!-- Sticky top bar -->
   <header class="topbar" data-topbar>
     <div class="topbar__inner">
       <a class="brand" href="#top" aria-label="ZuZu home">
@@ -49,59 +67,158 @@
         <span class="brand__word">ZuZu</span>
       </a>
       <div class="topbar__right">
-        <span class="rolebar__label">I’m here as a</span>
-        <div class="seg" role="group" aria-label="View ZuZu as an artist or a fan" data-role-toggle>
-          <button type="button" class="seg__btn" data-role-set="fan" aria-pressed="true">fan</button>
-          <button type="button" class="seg__btn" data-role-set="artist" aria-pressed="false">artist</button>
-          <span class="seg__pill" aria-hidden="true"></span>
-        </div>
-        <a class="topbar__cta" href="#waitlist">Join the waitlist</a>
+        <!-- The fan is the campaign audience, so the role switch is a quiet
+             way out for artists rather than a 50/50 choice. Still a real
+             toggle, still announces its state. -->
+        <button type="button" class="rolelink" data-role-toggle-link aria-pressed="false">
+          <span class="r-fan">Are you an artist?</span>
+          <span class="r-artist">Are you a fan?</span>
+        </button>
+        <a class="btn topbar__cta" href="#waitlist">Join the waitlist</a>
       </div>
     </div>
   </header>
 
   <main id="top">
 
-    <!-- HERO -->
-    <section class="hero">
-      <p class="eyebrow">Coming soon · For independent artists &amp; the fans who show up</p>
-      <h1 class="hero__title">
-        <span class="r-artist">Your audience should<br class="hero__break" />belong to you.</span>
-        <span class="r-fan">Get closer than<br class="hero__break" />a follow.</span>
-      </h1>
-      <div class="hero__ledes">
-        <p class="hero__lede r-artist">
-          New fans find your music. The ones who love it get closer. And you
-          <strong>own who they are</strong>: real names and contact you keep, not numbers on a
-          dashboard you rent.
-        </p>
-        <p class="hero__lede r-fan">
-          <strong>A direct line to the artists you love</strong>, unreleased music, and the people
-          who hear it the way you do. No queue, no ticket, wherever you live.
-        </p>
-      </div>
+    <!-- HERO: the cover. Full-strength gradient, copy left, the artist's page right. -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <p class="eyebrow">
+            <span class="r-fan">Coming soon · For the fans who show up</span>
+            <span class="r-artist">Coming soon · For independent artists</span>
+          </p>
+          <h1 class="hero__title" id="hero-title">
+            <span class="r-artist">Your audience should<br class="hero__break" />belong to you.</span>
+            <span class="r-fan v-default">Get closer than<br class="hero__break" />a follow.</span>
+            <span class="r-fan v-ad1">Hear it before<br class="hero__break" />the world does.</span>
+            <span class="r-fan v-ad2">They post.<br class="hero__break" />You never see it.</span>
+            <span class="r-fan v-ad4">The most direct line<br class="hero__break" />to your favourite artist.</span>
+          </h1>
+          <div class="hero__ledes">
+            <p class="hero__lede r-artist">
+              New fans find your music. The ones who love it get closer. And you
+              <strong>own who they are</strong>: real names and contact you keep, not numbers on a
+              dashboard you rent.
+            </p>
+            <p class="hero__lede r-fan v-default">
+              <strong>A direct line to the artists you love</strong>, unreleased music, and the people
+              who hear it the way you do.
+            </p>
+            <p class="hero__lede r-fan v-ad1">
+              You follow them. You still hear the song the same day as everyone else.
+              <strong>On ZuZu the demo lands with their community first.</strong>
+            </p>
+            <p class="hero__lede r-fan v-ad2">
+              Following isn’t hearing from them. <strong>On ZuZu the artist talks straight to the
+              people who are in</strong>, and no algorithm decides who gets it.
+            </p>
+            <p class="hero__lede r-fan v-ad4">
+              We asked fans what they’d pay for. Hearing new music first came top.
+              <strong>First listens, voice memos, and the artist actually replying.</strong>
+            </p>
+          </div>
 
-      <form class="waitlist-form waitlist-form--hero" data-waitlist novalidate>
-        <div class="field">
-          <input class="field__input" type="email" name="email" inputmode="email" autocomplete="email"
-                 placeholder="you@email.com" aria-label="Email address" required />
-          <button class="btn" type="submit" data-cta>Join the waitlist</button>
+          <form class="waitlist-form waitlist-form--hero" data-waitlist novalidate>
+            <div class="field">
+              <input class="field__input" id="email-hero" type="email" name="email" inputmode="email" autocomplete="email"
+                     placeholder="you@email.com" aria-label="Email address" required />
+              <button class="btn" type="submit" data-cta>Join the waitlist</button>
+            </div>
+            <p class="waitlist-form__note" data-note>
+              Free. First access at launch, and your handle before anyone else.
+            </p>
+            <p class="waitlist-form__status" role="status" aria-live="polite"></p>
+          </form>
         </div>
-        <p class="waitlist-form__note" data-note>
-          Free. First access at launch, and your handle before anyone else.
-        </p>
-        <p class="waitlist-form__status" role="status" aria-live="polite"></p>
-      </form>
+
+        <figure class="hero__visual">
+          <!-- Fans: the direct line in front of the artist's profile. -->
+          <img class="hero__shot hero__shot--back shot r-fan" src="assets/shot-artist.webp" width="1206" height="2622"
+               loading="lazy" decoding="async" alt="" />
+          <img class="hero__shot hero__shot--front shot r-fan" src="assets/shot-line.webp" width="1206" height="2622"
+               fetchpriority="high" decoding="async"
+               alt="The ZuZu app: a direct line between a fan and an artist, the artist asking what pulled you in. Behind it, the artist’s profile with their photo and releases." />
+          <!-- Artists: what their people see. The room in front of the community page. -->
+          <img class="hero__shot hero__shot--back shot r-artist" src="assets/shot-community.webp" width="1206" height="2622"
+               loading="lazy" decoding="async" alt="" />
+          <img class="hero__shot hero__shot--front shot r-artist" src="assets/shot-chat.webp" width="1206" height="2622"
+               loading="lazy" decoding="async"
+               alt="The ZuZu app as fans see it: a community chat with the artist answering in it. Behind it, the artist’s Fan Community page." />
+        </figure>
+      </div>
     </section>
 
-    <!-- PROBLEM (role-aware) -->
-    <section class="problem">
-      <!-- Artist framing -->
-      <div class="r-artist">
-        <h2 class="section-kicker">The gap nobody built for</h2>
-        <p class="problem__lead">
-          Fans spend billions on the artists they love. Almost none of it reaches the artist.
-        </p>
+    <!-- THE STORY: five things joining gets you, each a promise and its proof,
+         led by the direct line and early access. Full screens from the app,
+         all one size: one phone follows the beat on wide screens, each beat
+         carries its own on phones. The copy never names an artist. -->
+    <section class="story r-fan" id="story" aria-labelledby="story-title">
+      <div class="wrap">
+        <div class="story__intro">
+          <p class="label">Inside a Fan Community</p>
+          <h2 class="section-title" id="story-title">Five things a follow never got you.</h2>
+          <p class="lead">This is what joining an artist’s community gets you.</p>
+        </div>
+
+        <div class="story__layout">
+          <div class="story__beats">
+            <article class="beat" data-beat="1" data-reveal>
+              <p class="label beat__label">01 · The direct line</p>
+              <h3 class="beat__title">The artist writes to you. You write back.</h3>
+              <p class="beat__text">One thread, just the two of you. Not a comment section, not a broadcast.</p>
+              <img class="beat__shot shot" src="assets/shot-line.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A direct line thread between a fan and an artist: the artist asks what pulled you in, and answers which version goes out first." />
+            </article>
+            <article class="beat" data-beat="2" data-reveal>
+              <p class="label beat__label">02 · Early access</p>
+              <h3 class="beat__title">The new song, before release day.</h3>
+              <p class="beat__text">And the loop it started as, the line that got cut, the note on why. You hear the record while it’s being made.</p>
+              <img class="beat__shot shot" src="assets/shot-diary.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A song diary: a voice note of the first loop with its waveform, a note on why the kick comes in late, and the finished song marked yours now, everyone else on release day." />
+            </article>
+            <article class="beat" data-beat="3" data-reveal>
+              <p class="label beat__label">03 · The Vault</p>
+              <h3 class="beat__title">Everything that never gets released.</h3>
+              <p class="beat__text">Stems, demos, live takes, sleeve tests. It stays here, for the people who joined.</p>
+              <img class="beat__shot shot" src="assets/shot-vault.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Vault, filtered by demos, voice memos, photos and live: a sleeve test, stems, a live set, a photo of the desk, a session photo and a voice memo." />
+            </article>
+            <article class="beat" data-beat="4" data-reveal>
+              <p class="label beat__label">04 · The room</p>
+              <h3 class="beat__title">A room with the artist in it.</h3>
+              <p class="beat__text">The community chat is them and the people who hear it the way you do. Ask something. They answer.</p>
+              <img class="beat__shot shot" src="assets/shot-chat.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A community chat: fans asking about the tram at the end of the live set, and the artist answering." />
+            </article>
+            <article class="beat" data-beat="5" data-reveal>
+              <p class="label beat__label">05 · The community</p>
+              <h3 class="beat__title">Join, and all of it opens.</h3>
+              <p class="beat__text">The line, the new music, the Vault and the room, in one place. And the artist knows you were here early.</p>
+              <img class="beat__shot shot" src="assets/shot-community.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Fan Community in the ZuZu app, marked Joined: early access, stems and a direct line, with doors to the community chat, the Vault and the direct line." />
+            </article>
+          </div>
+
+          <div class="story__stage" aria-hidden="true">
+            <div class="stage" data-stage>
+              <img class="stage__shot shot is-active" data-shot="1" src="assets/shot-line.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot" data-shot="2" src="assets/shot-diary.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot" data-shot="3" src="assets/shot-vault.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot" data-shot="4" src="assets/shot-chat.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot" data-shot="5" src="assets/shot-community.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+            </div>
+          </div>
+        </div>
+
+        <div class="story__end">
+          <a class="btn-secondary" href="#waitlist">Join the waitlist</a>
+          <p class="story__note">Screens from the ZuZu app. The artist shown is an example.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE GAP (artists) -->
+    <section class="gap section r-artist" aria-labelledby="gap-title">
+      <div class="wrap">
+        <p class="label">The gap nobody built for</p>
+        <h2 class="gap__title" id="gap-title">Fans spend billions on the artists they love. Almost none of it reaches the artist.</h2>
         <div class="stats">
           <div class="stat" data-reveal>
             <span class="stat__num">97%</span>
@@ -116,132 +233,201 @@
             <span class="stat__cap">of listeners drive <strong>20% of your streams</strong></span>
           </div>
         </div>
-        <blockquote class="pullquote" data-reveal>
+        <p class="lead gap__sub">
           Your biggest fans are already there. You just can’t see them, reach them, or keep them.
           <strong>That’s what ZuZu fixes.</strong>
-        </blockquote>
-      </div>
-
-      <!-- Fan framing -->
-      <div class="r-fan">
-        <h2 class="section-kicker">What closeness actually looks like</h2>
-        <p class="problem__lead">
-          A follow gets you posts. ZuZu gets you <em>closer</em>.
         </p>
-        <div class="perks">
-          <div class="perk" data-reveal>
-            <h3 class="perk__title">Your people</h3>
-            <p>The other fans who hear it like you do, in one place.</p>
+      </div>
+    </section>
+
+    <!-- STUDIO: the artist's console. Tabs over full-window screens; without
+         JS every panel simply shows, one after another. -->
+    <section class="studio section r-artist" id="studio" aria-labelledby="studio-title">
+      <div class="wrap">
+        <p class="label">ZuZu Studio · for artists</p>
+        <h2 class="section-title" id="studio-title">Your audience, on a console you own.</h2>
+        <p class="lead">Studio is the web app behind every community. Post, see who’s listening, take the lines you want, upload once, go live. Half of every $2 is yours.</p>
+
+        <div class="tabs" role="tablist" aria-label="ZuZu Studio" data-tabs>
+            <button type="button" class="tab" role="tab" id="tab-dashboard" aria-controls="panel-dashboard" aria-selected="true">Dashboard</button>
+            <button type="button" class="tab" role="tab" id="tab-audience" aria-controls="panel-audience" aria-selected="false" tabindex="-1">Audience</button>
+            <button type="button" class="tab" role="tab" id="tab-room" aria-controls="panel-room" aria-selected="false" tabindex="-1">The room</button>
+            <button type="button" class="tab" role="tab" id="tab-lines" aria-controls="panel-lines" aria-selected="false" tabindex="-1">Lines</button>
+            <button type="button" class="tab" role="tab" id="tab-music" aria-controls="panel-music" aria-selected="false" tabindex="-1">Music</button>
+            <button type="button" class="tab" role="tab" id="tab-vault" aria-controls="panel-vault" aria-selected="false" tabindex="-1">The Vault</button>
+            <button type="button" class="tab" role="tab" id="tab-live" aria-controls="panel-live" aria-selected="false" tabindex="-1">Go live</button>
+        </div>
+        <div class="panels">
+          <div class="panel" role="tabpanel" id="panel-dashboard" aria-labelledby="tab-dashboard">
+            <div class="panel__copy">
+              <h3 class="panel__title">Your people, at a glance.</h3>
+              <p class="panel__text">Who joined, who’s listening, what’s playing and what you’ve earned. Hide the counts when you’d rather not look.</p>
+            </div>
+            <div class="panel__frame">
+              <img class="panel__shot shot" src="assets/studio-dashboard.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The ZuZu Studio dashboard: people who joined, listeners, plays, revenue and gifts, monthly plays, the community’s growth, recent activity and top tracks." />
+            </div>
           </div>
-          <div class="perk" data-reveal>
-            <h3 class="perk__title">Unreleased music</h3>
-            <p>Demos, edits, and b-sides that never hit streaming.</p>
+          <div class="panel" role="tabpanel" id="panel-audience" aria-labelledby="tab-audience">
+            <div class="panel__copy">
+              <h3 class="panel__title">Know who shows up. Write to them.</h3>
+              <p class="panel__text">Listeners grouped by how they listen, where they are and what they play. Message any group from here.</p>
+            </div>
+            <div class="panel__frame">
+              <img class="panel__shot shot" src="assets/studio-audience.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio Audience: listeners, streams, saves and people who joined over twelve months, with top songs, sources of streams and audience segments." />
+            </div>
           </div>
-          <div class="perk" data-reveal>
-            <h3 class="perk__title">Fans-first merch</h3>
-            <p>Drops and limited runs, before anyone else.</p>
+          <div class="panel" role="tabpanel" id="panel-room" aria-labelledby="tab-room">
+            <div class="panel__copy">
+              <h3 class="panel__title">Your community chat, with you in it.</h3>
+              <p class="panel__text">The same room your people are in, from your desk. Drop in whenever.</p>
+            </div>
+            <div class="panel__frame">
+              <img class="panel__shot shot" src="assets/studio-room.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The Studio inbox showing the community room, with fans talking and the artist answering, and direct line requests beside it." />
+            </div>
           </div>
-          <div class="perk" data-reveal>
-            <h3 class="perk__title">A direct line</h3>
-            <p>Actually talk to the artist, not to a comment section.</p>
+          <div class="panel" role="tabpanel" id="panel-lines" aria-labelledby="tab-lines">
+            <div class="panel__copy">
+              <h3 class="panel__title">Fans ask for a line. You accept the ones you want.</h3>
+              <p class="panel__text">One thread each, and nothing you didn’t open.</p>
+            </div>
+            <div class="panel__frame">
+              <img class="panel__shot shot" src="assets/studio-lines.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio direct lines: a list of open lines with each fan’s last message, and the thread beside it." />
+            </div>
           </div>
-          <div class="perk" data-reveal>
-            <h3 class="perk__title">A hand in what’s next</h3>
-            <p>Votes that count: artwork, setlists, what gets finished first.</p>
+          <div class="panel" role="tabpanel" id="panel-music" aria-labelledby="tab-music">
+            <div class="panel__copy">
+              <h3 class="panel__title">Upload once.</h3>
+              <p class="panel__text">Records, songs and drafts, lossless in. Publish when it’s ready.</p>
+            </div>
+            <div class="panel__frame">
+              <img class="panel__shot shot" src="assets/studio-music.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio My Music: an album and an EP with their tracks, each published or draft, and an upload button." />
+            </div>
           </div>
-          <div class="perk" data-reveal>
-            <h3 class="perk__title">Founding-fan status</h3>
-            <p>A permanent mark that you were here first.</p>
+          <div class="panel" role="tabpanel" id="panel-vault" aria-labelledby="tab-vault">
+            <div class="panel__copy">
+              <h3 class="panel__title">Everything you keep back, open to your people.</h3>
+              <p class="panel__text">Demos, voice notes, photos and live takes, with the Song Diary beside each track.</p>
+            </div>
+            <div class="panel__frame">
+              <img class="panel__shot shot" src="assets/studio-vault.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="The Studio Vault: pieces linked to songs and marked Vault or Diary, with a diary panel for one track." />
+            </div>
+          </div>
+          <div class="panel" role="tabpanel" id="panel-live" aria-labelledby="tab-live">
+            <div class="panel__copy">
+              <h3 class="panel__title">Go live from your phone.</h3>
+              <p class="panel__text">Studio runs the room; your phone is the camera. A free preview, then your people.</p>
+            </div>
+            <div class="panel__frame">
+              <img class="panel__shot shot" src="assets/studio-live.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Studio Go Live: pair your phone, set a title and type, choose a free preview, go live now or schedule." />
+            </div>
           </div>
         </div>
-        <blockquote class="pullquote" data-reveal>
-          From the artists <em>you</em> choose. <strong>Not a face in the crowd. A name they know.</strong>
-        </blockquote>
       </div>
     </section>
 
     <!-- HOW IT WORKS -->
-    <section class="how" id="how">
-      <h2 class="section-title">How ZuZu works</h2>
-      <p class="section-sub r-artist">
-        Three steps: anonymous listeners become fans you know, reach, and keep.
-      </p>
-      <p class="section-sub r-fan">
-        Three steps to get closer than a follow ever could.
-      </p>
-
-      <ol class="steps">
-        <li class="step" data-reveal>
-          <span class="step__n">01</span>
-          <div class="step__body">
-            <h3 class="step__title r-artist">Get discovered</h3>
-            <h3 class="step__title r-fan">Discover</h3>
-            <p class="r-artist">New fans find your music and follow the sound, not an algorithm. Discovery that brings you people, not just plays.</p>
-            <p class="r-fan">Find artists before everyone else. Real discovery, not whatever the feed is selling.</p>
-          </div>
-        </li>
-        <li class="step" data-reveal>
-          <span class="step__n">02</span>
-          <div class="step__body">
-            <h3 class="step__title">Get closer</h3>
-            <p class="r-artist">Your biggest fans step into your world: early drops, the process behind them, a say in what’s next. They back you directly. No tour required.</p>
-            <p class="r-fan">Step into their world: unreleased demos, the process as it happens, and the people who love them like you do.</p>
-          </div>
-        </li>
-        <li class="step" data-reveal>
-          <span class="step__n">03</span>
-          <div class="step__body">
-            <h3 class="step__title r-artist">Own the relationship</h3>
-            <h3 class="step__title r-fan">Be the one who was there first</h3>
-            <p class="r-artist">When a fan steps closer, they choose to be known to you. Name, contact, history: <strong>yours</strong>, exportable any time. Leave tomorrow and you keep every one.</p>
-            <p class="r-fan">Founding status with the artists you love. A permanent mark that you were there first.</p>
-          </div>
-        </li>
-      </ol>
+    <section class="how section" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <p class="label">How it works</p>
+        <h2 class="section-title" id="how-title">
+          <span class="r-artist">Listeners become fans you know, reach, and keep.</span>
+          <span class="r-fan">Three steps to closer than a follow.</span>
+        </h2>
+        <ol class="steps">
+          <li class="step" data-reveal>
+            <span class="step__n">01</span>
+            <div class="step__body">
+              <h3 class="step__title r-artist">Get discovered</h3>
+              <h3 class="step__title r-fan">Discover</h3>
+              <p class="r-artist">New fans find your music and follow the sound, not an algorithm. Discovery that brings you people, not just plays.</p>
+              <p class="r-fan">Find artists before everyone else. Real discovery, not whatever the feed is selling.</p>
+            </div>
+          </li>
+          <li class="step" data-reveal>
+            <span class="step__n">02</span>
+            <div class="step__body">
+              <h3 class="step__title r-artist">Get closer</h3>
+              <h3 class="step__title r-fan">Join</h3>
+              <p class="r-artist">Your biggest fans step into your world: early drops, the process behind them, a say in what’s next. They back you directly. No tour required.</p>
+              <p class="r-fan">Step into their world: the Vault, the diary, the direct line, and the people who love them like you do.</p>
+            </div>
+          </li>
+          <li class="step" data-reveal>
+            <span class="step__n">03</span>
+            <div class="step__body">
+              <h3 class="step__title r-artist">Own the relationship</h3>
+              <h3 class="step__title r-fan">Be first</h3>
+              <p class="r-artist">When a fan steps closer, they choose to be known to you. Name, contact, history: <strong>yours</strong>, exportable any time. Leave tomorrow and you keep every one.</p>
+              <p class="r-fan">Hear it before release. The artist knows you were there early.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
     </section>
 
-    <!-- WAITLIST -->
-    <section class="waitlist" id="waitlist">
-      <div class="waitlist__inner" data-reveal>
-        <h2 class="waitlist__title">Be early.</h2>
+    <!-- JOIN: the one highlighted card on this screen takes the gradient. -->
+    <section class="join section" id="waitlist" aria-labelledby="join-title">
+      <div class="wrap">
+        <div class="join__card" data-reveal>
+          <p class="label join__label">Waitlist</p>
+          <h2 class="join__title" id="join-title">Be early.</h2>
 
-        <p class="waitlist__sub r-artist">
-          We’re onboarding a first group of founding artists. Leave your email and we’ll bring you
-          in first, with first pick of your @handle.
-        </p>
-        <p class="waitlist__sub r-fan">
-          Leave your email for first access when we open, and your handle before anyone else.
-        </p>
+          <p class="join__sub r-artist">
+            We’re onboarding a first group of founding artists. Leave your email and we’ll bring you
+            in first, with first pick of your @handle.
+          </p>
+          <p class="join__sub r-fan">
+            Leave your email for first access when we open, and your handle before anyone else.
+          </p>
 
-        <form class="waitlist-form waitlist-form--main" data-waitlist novalidate>
-          <div class="field">
-            <input class="field__input" type="email" name="email" inputmode="email" autocomplete="email"
-                   placeholder="you@email.com" aria-label="Email address" required />
-            <button class="btn" type="submit" data-cta>Join the waitlist</button>
+          <form class="waitlist-form waitlist-form--main" data-waitlist novalidate>
+            <div class="field">
+              <input class="field__input" id="email-main" type="email" name="email" inputmode="email" autocomplete="email"
+                     placeholder="you@email.com" aria-label="Email address" required />
+              <button class="btn" type="submit" data-cta>Join the waitlist</button>
+            </div>
+            <p class="waitlist-form__note">Free to join. At launch, each artist’s community is $2 a month, cancel anytime.</p>
+            <p class="waitlist-form__status" role="status" aria-live="polite"></p>
+          </form>
+
+          <!-- Shown only after a signup lands. Optional: skipping it costs nothing. -->
+          <div class="after" data-after-signup hidden>
+            <form class="waitlist-form after__form" data-artist-request novalidate>
+              <label class="after__label" for="artist-wanted">Which artist do you want on ZuZu first?</label>
+              <div class="field">
+                <input class="field__input" id="artist-wanted" type="text" name="artist"
+                       autocomplete="off" placeholder="Their name" maxlength="120" />
+                <button class="btn" type="submit">Send</button>
+              </div>
+              <p class="waitlist-form__status" role="status" aria-live="polite"></p>
+            </form>
+            <button type="button" class="btn-secondary sharebtn" data-share>Share ZuZu</button>
           </div>
-          <p class="waitlist-form__note">No spam, ever. Just word when there’s a door to open.</p>
-          <p class="waitlist-form__status" role="status" aria-live="polite"></p>
-        </form>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="footer__brand">
-      <img class="footer__mark" src="assets/zuzu-mark.png" alt="" width="26" height="26" />
-      <span>ZuZu</span>
+    <div class="wrap footer__inner">
+      <div class="footer__brand">
+        <img class="footer__mark" src="assets/zuzu-mark-white.png" alt="" width="26" height="26" />
+        <span>ZuZu</span>
+      </div>
+      <p class="footer__line r-artist">Your audience should belong to you.</p>
+      <nav class="footer__links" aria-label="ZuZu elsewhere">
+        <a href="https://www.linkedin.com/company/zuzuapp/" target="_blank" rel="noopener">
+          <svg class="footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>
+          <span>LinkedIn</span>
+        </a>
+        <a href="https://studio.zuzu.music/privacy" target="_blank" rel="noopener"><span>Privacy</span></a>
+      </nav>
+      <p class="footer__legal">
+        © <span data-year>2026</span> ZuZu Technologies Inc. All rights reserved.
+      </p>
     </div>
-    <nav class="footer__links" aria-label="ZuZu elsewhere">
-      <a href="https://www.linkedin.com/company/zuzuapp/" target="_blank" rel="noopener">
-        <svg class="footer__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>
-        <span>LinkedIn</span>
-      </a>
-    </nav>
-    <p class="footer__legal">
-      © <span data-year>2026</span> ZuZu Technologies Inc. All rights reserved.
-    </p>
   </footer>
 
-  <script src="script.js?v=202609110511"></script>
+  <script src="script.js?v=202610141736"></script>
 </body>
 </html>
