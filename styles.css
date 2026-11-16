@@ -873,3 +873,100 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .legal li { margin: 0 0 6px; }
 .legal strong { color: var(--fg); }
 .legal a { color: var(--fg); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--outline); }
+
+/* ---------- The company page ----------
+   Built from the site's own pieces: labels, 2px Sage accent rules, hairline
+   rows, the calculator's card for each role, the Primary button. The page
+   sits on the wash like every other page, so labels stay Ink at 70 (Sage
+   labels are for plain Paper and White) and Sage is only the accent rule.
+   Roles are native <details> on white cards: the open/closed mark is the
+   browser's own, hung in the summary's left padding so the title and the
+   line under it share one edge. */
+.company { padding-block: clamp(40px, 7vw, 88px) clamp(56px, 8vw, 104px); }
+.company__hero h1 {
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(1.9rem, 4.6vw, 3.2rem);
+  line-height: 1.1; letter-spacing: -.02em;
+  max-width: 20ch; margin: 0;
+}
+.company__section { margin-top: clamp(48px, 7vw, 88px); }
+.company__label { border-top: 2px solid var(--sage); padding-top: 18px; margin-bottom: 20px; }
+.company__about p { margin: 0 0 16px; max-width: 62ch; font-size: 1.0625rem; line-height: 1.6; color: var(--fg-70); }
+.company__about p:last-child { margin-bottom: 0; }
+
+.roles__intro { margin: 0 0 24px; max-width: 62ch; font-size: 1.0625rem; line-height: 1.6; color: var(--fg-70); }
+.roles__none { display: none; margin: 0; font-size: 1.0625rem; line-height: 1.6; color: var(--fg-70); }
+.roles:not(:has(.role)) .roles__intro,
+.roles:not(:has(.role)) .roles__eeo { display: none; }
+.roles:not(:has(.role)) .roles__none { display: block; }
+.roles__list { display: grid; gap: 12px; }
+.roles__eeo { margin: 24px 0 0; font-size: .9375rem; color: var(--fg-70); }
+
+.role {
+  --pad: clamp(20px, 3.5vw, 36px);
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  scroll-margin-top: calc(var(--topbar-h) + 8px);
+}
+.role__summary {
+  display: list-item;
+  list-style-position: inside;
+  padding: clamp(20px, 3vw, 28px) var(--pad) clamp(20px, 3vw, 28px) calc(var(--pad) + 1.05em);
+  text-indent: -1.05em;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background .2s var(--ease);
+}
+.role__summary:hover { background: var(--rest); }
+.role__summary:focus-visible { outline-offset: 2px; border-radius: var(--radius); }
+.role__summary::marker { color: var(--label); }
+.role__title {
+  display: inline; margin: 0;
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.3; letter-spacing: -.015em;
+}
+.role__meta { display: block; text-indent: 0; margin-top: 6px; font-size: .9375rem; line-height: 1.5; color: var(--fg-70); }
+.role[open] .role__meta { display: none; }
+
+.role__body { padding: 4px var(--pad) clamp(24px, 4vw, 40px); }
+.role__facts {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px; margin: 0 0 clamp(24px, 3vw, 32px);
+}
+.role__fact { border-top: 2px solid var(--sage); padding-top: 14px; }
+.role__fact dt {
+  font-family: var(--mono); font-weight: 500;
+  font-size: .75rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--label);
+  margin: 0 0 10px;
+}
+.role__value {
+  margin: 0;
+  font-family: var(--mono); font-weight: 500;
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+  line-height: 1.1; letter-spacing: -.02em;
+}
+.role__note { margin: 6px 0 0; font-size: .875rem; line-height: 1.45; color: var(--fg-70); }
+.role__intro { margin: 0; max-width: 62ch; font-size: 1.0625rem; line-height: 1.6; }
+
+.role__pair { display: grid; gap: 28px; margin-top: clamp(28px, 4vw, 40px); }
+.role__list { list-style: none; margin: 0; padding: 0; }
+.role__list li {
+  border-top: 1px solid var(--hairline);
+  padding: 11px 0;
+  font-size: 1rem; line-height: 1.5; color: var(--fg-70);
+}
+.role__list li:last-child { border-bottom: 1px solid var(--hairline); }
+
+.role__apply { margin-top: clamp(28px, 4vw, 40px); }
+.role__apply p { margin: 0 0 20px; max-width: 62ch; font-size: 1rem; line-height: 1.6; color: var(--fg-70); }
+.btn.role__cta { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+
+@media (min-width: 900px) {
+  .role__pair { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+}
+@media (max-width: 720px) {
+  .role__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 18px; }
+}
