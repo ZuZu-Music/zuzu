@@ -446,37 +446,78 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
 }
 
 // ---- Story stages ---------------------------------------------------------
-// Wide viewports only: the screen beside a story follows whichever beat is in
-// the middle of the viewport. One IntersectionObserver per story with a thin
-// band around the centre, so there is no scroll listener and no per-frame
-// work. On phones the stage is display:none and each beat carries its own
-// screen inline. Both the fan story and the Studio story use this.
+// Wide viewports only: the screen beside the story changes when a beat's
+// words are level with the middle of the phone, not before (Antonis,
+// 2026-11-17: "the text needs to be in the middle of the corresponding phone
+// before it switches"). Between beats the last screen stays up. It watched
+// the whole beat before, and a beat is as tall as the screen, so the switch
+// came while the words were still at the bottom edge.
+// One passive scroll listener, read at most once a frame and only while the
+// page moves: a handful of rectangles, and a write only when the beat
+// changes. On phones the stage is display:none, the listener is off, and each
+// beat carries its own screen inline.
 (function () {
-  if (!("IntersectionObserver" in window)) return;
-  document.querySelectorAll("[data-stage]").forEach((stage) => {
-    const story = stage.closest(".story");
-    const shots = Array.from(stage.querySelectorAll("[data-shot]"));
-    const beats = story ? story.querySelectorAll("[data-beat]") : [];
-    if (!shots.length || !beats.length) return;
-    // The screen for this beat comes in; the ones already passed drift up and
-    // away, the ones still to come wait below.
-    const show = (id) => {
-      const at = shots.findIndex((img) => img.dataset.shot === id);
-      shots.forEach((img, i) => {
-        img.classList.toggle("is-active", i === at);
-        img.classList.toggle("is-past", i < at);
-      });
-    };
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) show(entry.target.dataset.beat);
-        });
-      },
-      { rootMargin: "-42% 0px -42% 0px", threshold: 0 }
-    );
-    beats.forEach((beat) => io.observe(beat));
-  });
+  const stage = document.querySelector("[data-stage]");
+  const story = stage && stage.closest(".story");
+  if (!story) return;
+  const shots = Array.from(stage.querySelectorAll("[data-shot]"));
+  const beats = Array.from(story.querySelectorAll("[data-beat]"));
+  if (!shots.length || !beats.length) return;
+  const wide = window.matchMedia("(min-width: 900px)");
+
+  let current = "1";
+  const show = (id) => {
+    if (id === current) return;
+    current = id;
+    const at = shots.findIndex((img) => img.dataset.shot === id);
+    shots.forEach((img, i) => {
+      img.classList.toggle("is-active", i === at);
+      img.classList.toggle("is-past", i < at);
+    });
+  };
+
+  // The middle of a beat's words: its label down to its last line of copy.
+  const wordsMiddle = (beat) => {
+    const top = beat.firstElementChild.getBoundingClientRect().top;
+    const last = beat.querySelector(".beat__text") || beat.lastElementChild;
+    return (top + last.getBoundingClientRect().bottom) / 2;
+  };
+
+  // force: take the nearest beat wherever it is (first paint, resize).
+  const pick = (force) => {
+    const phone = stage.getBoundingClientRect();
+    const mid = phone.top + phone.height / 2;
+    let nearest = null;
+    let nearestGap = Infinity;
+    let currentGap = Infinity;
+    beats.forEach((beat) => {
+      const gap = Math.abs(wordsMiddle(beat) - mid);
+      if (gap < nearestGap) { nearestGap = gap; nearest = beat; }
+      if (beat.dataset.beat === current) currentGap = gap;
+    });
+    if (!nearest) return;
+    // Level with the middle third of the phone. A jump (Home, a link) can land
+    // between beats with the shown one far away; then the nearest one wins.
+    if (force || nearestGap <= phone.height / 6 || currentGap > window.innerHeight * 1.2) {
+      show(nearest.dataset.beat);
+    }
+  };
+
+  let queued = false;
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; pick(false); });
+  };
+  const sync = () => {
+    window.removeEventListener("scroll", onScroll);
+    if (!wide.matches) return;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    pick(true);
+  };
+  wide.addEventListener("change", sync);
+  window.addEventListener("resize", () => { if (wide.matches) pick(true); });
+  sync();
 })();
 
 // ---- Studio tabs -----------------------------------------------------------
