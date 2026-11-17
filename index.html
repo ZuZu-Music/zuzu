@@ -53,7 +53,7 @@
 
   <!-- The direct line screen is the hero on every width: in front of the artist profile on wide screens, peeking under the form on phones. -->
   <link rel="preload" as="image" href="assets/shot-line.webp" />
-  <link rel="stylesheet" href="styles.css?v=202611170055" />
+  <link rel="stylesheet" href="styles.css?v=202611170228" />
 </head>
 <body data-role="fan">
   <a class="skip-link" href="#top">Skip to content</a>
@@ -91,7 +91,7 @@
       <div class="wrap hero__grid">
         <div class="hero__copy">
           <p class="eyebrow">
-            <span class="r-fan">Coming soon · The music app for the fans who show up</span>
+            <span class="r-fan">Coming soon · Free music for the fans who show up</span>
             <span class="r-artist">Coming soon · For independent artists</span>
           </p>
           <h1 class="hero__title" id="hero-title">
@@ -150,58 +150,59 @@
       </div>
     </section>
 
-    <!-- THE STORY: five things joining gets you, each a promise and its proof,
-         led by the direct line and early access. Full screens from the app,
+    <!-- THE STORY: free streaming first, then four things joining an artist's
+         Fan Community gets you (the direct line, early access, the Vault, the
+         community itself), each a promise and its proof. Full screens from the app,
          all one size: one phone follows the beat on wide screens, each beat
          carries its own on phones. The copy never names an artist. -->
     <section class="story r-fan" id="story" aria-labelledby="story-title">
       <div class="wrap">
         <div class="story__intro">
-          <p class="label">Inside a Fan Community</p>
-          <h2 class="section-title" id="story-title">Five ways closer to the artist.</h2>
-          <p class="lead">This is what joining an artist’s Fan Community gets you.</p>
+          <p class="label">Inside ZuZu</p>
+          <h2 class="section-title" id="story-title">Free to listen. Closer when you join.</h2>
+          <p class="lead">Streaming on ZuZu is free. Join an artist’s Fan Community and you get closer.</p>
         </div>
 
         <div class="story__layout">
           <div class="story__beats">
             <article class="beat" data-beat="1" data-reveal>
-              <p class="label beat__label">01 · The direct line</p>
+              <p class="label beat__label">01 · Free streaming</p>
+              <h3 class="beat__title">Every song on ZuZu, free to stream.</h3>
+              <p class="beat__text">Listen to every artist here for free. A Fan Community is how you get closer, never the price of listening.</p>
+              <img class="beat__shot shot" data-fly src="assets/shot-stream.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="The ZuZu player with a song playing: its cover, the time bar, and play, skip and repeat controls." />
+            </article>
+            <article class="beat" data-beat="2" data-reveal>
+              <p class="label beat__label">02 · The direct line</p>
               <h3 class="beat__title">The artist writes to you. You write back.</h3>
               <p class="beat__text">One thread, just the two of you. Not a comment section, not a broadcast.</p>
               <img class="beat__shot shot" data-fly src="assets/shot-line.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A direct line thread between a fan and an artist: the artist asks what pulled you in, and answers which version goes out first." />
             </article>
-            <article class="beat" data-beat="2" data-reveal>
-              <p class="label beat__label">02 · Early access</p>
+            <article class="beat" data-beat="3" data-reveal>
+              <p class="label beat__label">03 · Early access</p>
               <h3 class="beat__title">The new song, before release day.</h3>
               <p class="beat__text">And the loop it started as, the line that got cut, the note on why. You hear the record while it’s being made.</p>
               <img class="beat__shot shot" data-fly src="assets/shot-diary.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A song diary: a voice note of the first loop with its waveform, a note on why the kick comes in late, and the finished song marked yours now, everyone else on release day." />
             </article>
-            <article class="beat" data-beat="3" data-reveal>
-              <p class="label beat__label">03 · The Vault</p>
+            <article class="beat" data-beat="4" data-reveal>
+              <p class="label beat__label">04 · The Vault</p>
               <h3 class="beat__title">Everything that never gets released.</h3>
               <p class="beat__text">Stems, demos, live takes, sleeve tests. It stays here, for the people who joined.</p>
               <img class="beat__shot shot" data-fly src="assets/shot-vault.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Vault, filtered by demos, voice memos, photos and live: a sleeve test, stems, a live set, a photo of the desk, a session photo and a voice memo." />
             </article>
-            <article class="beat" data-beat="4" data-reveal>
-              <p class="label beat__label">04 · The room</p>
-              <h3 class="beat__title">A room with the artist in it.</h3>
-              <p class="beat__text">The community chat is them and the people who hear it the way you do. Ask something. They answer.</p>
-              <img class="beat__shot shot" data-fly src="assets/shot-chat.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="A community chat: fans asking about the tram at the end of the live set, and the artist answering." />
-            </article>
             <article class="beat" data-beat="5" data-reveal>
               <p class="label beat__label">05 · The Fan Community</p>
               <h3 class="beat__title">Join, and all of it opens.</h3>
-              <p class="beat__text">The line, the new music, the Vault and the room, in one place. And the artist knows you were here early.</p>
+              <p class="beat__text">The line, the new music and the Vault, in one place. And the artist knows you were here early.</p>
               <img class="beat__shot shot" data-fly src="assets/shot-community.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="An artist’s Fan Community in the ZuZu app, marked Joined: early access, stems and a direct line, with doors to the community chat, the Vault and the direct line." />
             </article>
           </div>
 
           <div class="story__stage" aria-hidden="true">
             <div class="stage" data-stage data-fly>
-              <img class="stage__shot shot is-active" data-shot="1" src="assets/shot-line.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
-              <img class="stage__shot shot" data-shot="2" src="assets/shot-diary.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
-              <img class="stage__shot shot" data-shot="3" src="assets/shot-vault.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
-              <img class="stage__shot shot" data-shot="4" src="assets/shot-chat.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot is-active" data-shot="1" src="assets/shot-stream.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot" data-shot="2" src="assets/shot-line.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot" data-shot="3" src="assets/shot-diary.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
+              <img class="stage__shot shot" data-shot="4" src="assets/shot-vault.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
               <img class="stage__shot shot" data-shot="5" src="assets/shot-community.webp" width="1206" height="2622" loading="lazy" decoding="async" alt="" />
             </div>
           </div>
@@ -442,7 +443,7 @@
                      placeholder="you@email.com" aria-label="Email address" required />
               <button class="btn" type="submit" data-cta>Join the waitlist</button>
             </div>
-            <p class="waitlist-form__note">Free to join. At launch, each artist’s Fan Community is $2 a month, cancel anytime. <a href="/privacy/">How we use your email</a></p>
+            <p class="waitlist-form__note">Free to join, free to stream. At launch, each artist’s Fan Community is $2 a month, cancel anytime. <a href="/privacy/">How we use your email</a></p>
             <p class="waitlist-form__status" role="status" aria-live="polite"></p>
           </form>
 
@@ -489,6 +490,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=202611170055"></script>
+  <script src="script.js?v=202611170228"></script>
 </body>
 </html>
