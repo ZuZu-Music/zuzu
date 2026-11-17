@@ -104,7 +104,7 @@ main { overflow-x: clip; }
   position: absolute; left: 12px; top: -52px; z-index: 100;
   background: var(--fg); color: var(--surface);
   font-family: var(--mono); font-size: .8rem;
-  padding: 9px 16px; border-radius: 10px; text-decoration: none;
+  padding: 9px 16px; border-radius: var(--radius); text-decoration: none;
   transition: top .2s var(--ease);
 }
 .skip-link:focus { top: 12px; outline: 2px solid var(--surface); outline-offset: 2px; }
@@ -177,7 +177,7 @@ main { overflow-x: clip; }
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--hairline);
-  border-radius: 16px;
+  border-radius: var(--radius);
   transition: background .3s var(--ease);
 }
 .topbar.is-stuck .topbar__inner { background: var(--topbar-bg-stuck); }
@@ -288,6 +288,12 @@ main { overflow-x: clip; }
   box-shadow: var(--shadow);
   background: var(--card);
 }
+/* Whole phone screens take the phone's own screen corner instead (Antonis,
+   2026-11-16): about 62pt on a 402 by 874pt screen, measured from the
+   simulator's screen mask, so 15.5% of the width and 7.1% of the height
+   keeps it a true circle at any size. Still no device frame. Studio windows
+   and everything else keep the guide's 12. */
+.hero__shot, .beat__shot, .stage__shot { border-radius: 15.5% / 7.1%; }
 
 /* Phones: headline, lede, then the form and its price line, so all of it is
    in the first view (390x844 inside Instagram's browser), then both screens
