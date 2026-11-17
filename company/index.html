@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=202611170427" />
+  <link rel="stylesheet" href="/styles.css?v=202611170650" />
 </head>
 <body data-role="fan">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -254,7 +254,8 @@
   </footer>
 
   <!-- The only script on this page: opens the role named in the address
-       (/company/#growth-intern) and brings it into view. All copy is above. -->
+       (/company/#growth-intern) and brings it into view, and keeps a mouse
+       click from leaving the keyboard ring on a role. All copy is above. -->
   <script>
     (function () {
       function openFromHash() {
@@ -266,6 +267,9 @@
       }
       openFromHash();
       window.addEventListener("hashchange", openFromHash);
+      document.querySelectorAll(".role__summary").forEach(function (s) {
+        s.addEventListener("mousedown", function (e) { e.preventDefault(); });
+      });
     })();
   </script>
 </body>

@@ -903,15 +903,17 @@ body[data-role="fan"]    .hero__ledes .r-artist {
    rows, the calculator's card for each role, the Primary button. The page
    sits on the wash like every other page, so labels stay Ink at 70 (Sage
    labels are for plain Paper and White) and Sage is only the accent rule.
-   Roles are native <details> on white cards: the open/closed mark is the
-   browser's own, hung in the summary's left padding so the title and the
-   line under it share one edge. */
+   Roles are native <details> on white cards. The whole card is the control:
+   no browser triangle and no grey fill inside it, just a chevron on the right
+   that turns when the role opens, and the card's hairline darkening on hover.
+   The keyboard ring goes round the card, not round the summary. */
 .company { padding-block: clamp(40px, 7vw, 88px) clamp(56px, 8vw, 104px); }
 .company__hero h1 {
   font-family: var(--mono); font-weight: 500;
   font-size: clamp(1.9rem, 4.6vw, 3.2rem);
   line-height: 1.1; letter-spacing: -.02em;
-  max-width: 20ch; margin: 0;
+  max-width: 32ch; margin: 0;
+  text-wrap: balance;               /* two even lines wherever the line fits; phones wrap as needed */
 }
 .company__section { margin-top: clamp(48px, 7vw, 88px); }
 .company__label { border-top: 2px solid var(--sage); padding-top: 18px; margin-bottom: 20px; }
@@ -932,26 +934,40 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   background: var(--card);
   border: 1px solid var(--hairline);
   scroll-margin-top: calc(var(--topbar-h) + 8px);
+  transition: border-color .2s var(--ease);
 }
+@media (hover: hover) {
+  .role:has(> .role__summary:hover) { border-color: var(--outline); }
+  .role__summary:hover::after { background: var(--fg); }
+}
+.role:has(> .role__summary:focus-visible) { outline: 2px solid var(--fg); outline-offset: 3px; }
 .role__summary {
-  display: list-item;
-  list-style-position: inside;
-  padding: clamp(20px, 3vw, 28px) var(--pad) clamp(20px, 3vw, 28px) calc(var(--pad) + 1.05em);
-  text-indent: -1.05em;
-  border-radius: var(--radius);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 20px; align-items: center;
+  list-style: none;
+  padding: clamp(20px, 3vw, 28px) var(--pad);
   cursor: pointer;
-  transition: background .2s var(--ease);
 }
-.role__summary:hover { background: var(--rest); }
-.role__summary:focus-visible { outline-offset: 2px; border-radius: var(--radius); }
-.role__summary::marker { color: var(--label); }
+.role__summary::-webkit-details-marker { display: none; }
+.role__summary:focus-visible { outline: none; }
+.role__summary::after {
+  content: ""; grid-column: 2; grid-row: 1 / span 2;
+  width: 20px; height: 20px;
+  background: var(--fg-70);
+  -webkit-mask: var(--chev) center / contain no-repeat;
+          mask: var(--chev) center / contain no-repeat;
+  --chev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");
+  transition: transform .25s var(--ease), background-color .2s var(--ease);
+}
+.role[open] > .role__summary::after { transform: rotate(180deg); }
 .role__title {
-  display: inline; margin: 0;
+  grid-column: 1; margin: 0;
   font-family: var(--mono); font-weight: 500;
   font-size: clamp(1.15rem, 2vw, 1.45rem);
   line-height: 1.3; letter-spacing: -.015em;
 }
-.role__meta { display: block; text-indent: 0; margin-top: 6px; font-size: .9375rem; line-height: 1.5; color: var(--fg-70); }
+.role__meta { grid-column: 1; margin-top: 6px; font-size: .9375rem; line-height: 1.5; color: var(--fg-70); }
 .role[open] .role__meta { display: none; }
 
 .role__body { padding: 4px var(--pad) clamp(24px, 4vw, 40px); }
