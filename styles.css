@@ -559,7 +559,9 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   padding: clamp(44px, 6vw, 72px) 0;
   border-top: 1px solid var(--hairline);
 }
-.footer__inner { display: grid; gap: 18px; justify-items: start; }
+.footer__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; row-gap: 18px; justify-items: start; }
+.footer__inner > * { grid-column: 1 / -1; }          /* full width below the top row */
+.footer__inner > .footer__brand { grid-column: 1; }  /* shares the top row with the icons */
 .footer__brand { display: inline-flex; align-items: center; gap: 11px; font-family: var(--mono); font-weight: 500; font-size: 1.1rem; letter-spacing: -.05em; }
 .footer__mark { width: 26px; height: 26px; }
 .footer__line { margin: 0; font-family: var(--mono); font-size: .9rem; color: rgba(255, 255, 255, .7); }
@@ -575,7 +577,19 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 .footer__links a::after { content: ""; position: absolute; inset: -13px -12px; }   /* touch target */
 .footer__links a:hover { color: #FFFFFF; }
 .footer__links a:focus-visible { outline-color: #FFFFFF; }
-.footer__icon { width: 16px; height: 16px; flex: none; }
+/* Social icons: top right, level with the brand. Icon-only, so each link
+   carries an aria-label; the hit area is 44px, the icon 20px. */
+.footer__social { grid-column: 2; grid-row: 1; justify-self: end; align-self: center; display: flex; gap: 24px; }
+.footer__social a {
+  position: relative;
+  display: grid; place-items: center;
+  color: rgba(255, 255, 255, .7);
+  transition: color .2s var(--ease);
+}
+.footer__social a::after { content: ""; position: absolute; inset: -12px; }   /* touch target */
+.footer__social a:hover { color: #FFFFFF; }
+.footer__social a:focus-visible { outline-color: #FFFFFF; }
+.footer__icon { display: block; width: 20px; height: 20px; flex: none; }
 .footer__legal { font-size: .8125rem; color: rgba(255, 255, 255, .6); margin: 0; }
 
 /* ---------- Entrance motion ----------
