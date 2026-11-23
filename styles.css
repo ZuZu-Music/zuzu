@@ -1,5 +1,5 @@
 /* =========================================================
-   ZuZu — waitlist landing · Brand Guide V1.3
+   Zuzu — waitlist landing · Brand Guide V1.3
    Layout: a full-strength gradient cover, then a Paper page that tells one
    song's story from Rand Bellar's community (a sticky screen that follows
    the text on wide viewports, inline screens on phones), the six promises
@@ -111,7 +111,7 @@ main { overflow-x: clip; }
 
 /* ---------- Atmosphere: the UI background, as the guide builds it (V1.3 p18 · 04) ----------
    The mode's hero gradient at 25% over its surface, drawn corner to corner:
-   ZuZu over Paper, Night over Ink. Grain at 25%: the one grain tile, overlay
+   Zuzu over Paper, Night over Ink. Grain at 25%: the one grain tile, overlay
    blend, tiled at 64px. Nothing else. It is the same recipe, stop for stop,
    as bg-wash in the app. Pinned to the viewport so the screen you are on
    always carries the whole sweep; one fixed layer, composited once. */
@@ -758,7 +758,7 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 }
 
 /* ---------- The artist gap: how it works and the calculator ---------- */
-/* How ZuZu fixes it: a compact row under the stats, same three columns,
+/* How Zuzu fixes it: a compact row under the stats, same three columns,
    a hairline instead of the stats' Sage rule so the two rows read as
    problem and answer. */
 .fixes {

@@ -1,5 +1,5 @@
 /* =========================================================
-   ZuZu — waitlist landing logic
+   Zuzu — waitlist landing logic
    ========================================================= */
 
 // ---------------------------------------------------------------------------
@@ -168,7 +168,7 @@ function setupShare() {
     const label = btn.textContent;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "ZuZu", text: "Get closer than a follow.", url });
+        await navigator.share({ title: "Zuzu", text: "Get closer than a follow.", url });
         return;
       }
       await navigator.clipboard.writeText(url);
@@ -192,7 +192,7 @@ const COPY = {
     cta: "Join the waitlist",
     // The ads say $2, so the page says $2 in the same breath as the signup.
     note: "Free to join, free to stream. At launch, each artist’s Fan Community is $2 a month, cancel anytime.",
-    success: "You’re in. We’ll tell you the moment ZuZu opens.",
+    success: "You’re in. We’ll tell you the moment Zuzu opens.",
     already: "You’re already on the list. We’ll be in touch.",
   },
 };
@@ -616,7 +616,7 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
 })();
 
 // ---- Earnings calculator (artists): us vs them ---------------------------
-// Their number, times the share who join. On ZuZu each of those people pays
+// Their number, times the share who join. On Zuzu each of those people pays
 // the artist $1 a month (half of the $2, before tax). On the major streaming
 // apps the same fans pay what they play: about 30 plays a month each, since
 // 2% of listeners drive 20% of streams at roughly 3 plays a listener, at the
@@ -631,7 +631,7 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
   const usd0 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   const usd2 = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const money = (v) => (v > 0 && v < 100 && v % 1 ? usd2 : usd0).format(v);
-  const PER_PERSON = 1;                 // ZuZu: dollars a month to the artist, per person who joins
+  const PER_PERSON = 1;                 // Zuzu: dollars a month to the artist, per person who joins
   const PLAYS = 30, PER_PLAY = 0.004;   // streaming: the same fan, plays a month and dollars a play
   const MAX = 100000000;
 

@@ -1,9 +1,9 @@
-# ZuZu — waitlist site
+# Zuzu — waitlist site
 
-Single-page static site for **ZuZu** — the relationship infrastructure for
+Single-page static site for **Zuzu** — the relationship infrastructure for
 independent artists and their fans.
 
-Plain HTML/CSS/JS, no build step. Hosted on Vercel (team ZuZu, project
+Plain HTML/CSS/JS, no build step. Hosted on Vercel (team Zuzu, project
 `zuzu-site`): every push to `main` deploys https://zuzu.music.
 Run `./bump-version.sh` before pushing CSS/JS changes.
 
