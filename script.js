@@ -23,16 +23,8 @@ const isConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 // ---------------------------------------------------------------------------
 const ATTRIBUTION_KEY = "zuzu_attr";
 
-// Known ad variants. An unknown utm_content falls back to the default hero
-// rather than rendering an empty headline.
-const VARIANTS = {
-  ad1: "ad1",
-  ad2: "ad2",
-  ad4: "ad4",
-};
-
 function readAttribution() {
-  const attr = { source: "", medium: "", campaign: "", content: "", variant: "", referrer: "" };
+  const attr = { source: "", medium: "", campaign: "", content: "", referrer: "" };
   let q = null;
   try { q = new URLSearchParams(window.location.search); } catch (err) { /* leave q null */ }
   const hasUtm = Boolean(q && (q.get("utm_source") || q.get("utm_medium") || q.get("utm_campaign") || q.get("utm_content")));
@@ -55,7 +47,6 @@ function readAttribution() {
     attr.medium   = clip(q && q.get("utm_medium"), 64);
     attr.campaign = clip(q && q.get("utm_campaign"), 64);
     attr.content  = clip(q && q.get("utm_content"), 64);
-    attr.variant  = VARIANTS[attr.content] || "";
     // Same-origin referrers say nothing useful about where the visitor came from.
     const ref = document.referrer || "";
     attr.referrer = ref && ref.indexOf(window.location.origin) !== 0 ? clip(ref, 300) : "";
@@ -104,8 +95,8 @@ function loadPixel() {
 function pixelLead() {
   if (!PIXEL_ID || !window.fbq) return;
   try {
-    // No email, no name, no external id. Variant only, so we can read the ads.
-    window.fbq("track", "Lead", { content_name: ATTR.variant || "default" });
+    // No email, no name, no external id.
+    window.fbq("track", "Lead");
   } catch (err) {
     /* a blocked pixel must never surface to the visitor */
   }
@@ -224,7 +215,7 @@ function applyRole(role) {
     if (!btn.disabled) btn.textContent = COPY[role].cta;
   });
 
-  // Swap the hero note.
+  // Swap the waitlist note (the form at the bottom).
   const note = document.querySelector("[data-note]");
   if (note) note.textContent = COPY[role].note;
 
@@ -360,7 +351,6 @@ function waitlistRow(email, role) {
     if (ATTR.medium)   row.utm_medium   = ATTR.medium;
     if (ATTR.campaign) row.utm_campaign = ATTR.campaign;
     if (ATTR.content)  row.utm_content  = ATTR.content;
-    if (ATTR.variant)  row.variant      = ATTR.variant;
     if (ATTR.referrer) row.referrer     = ATTR.referrer;
   } catch (err) {
     /* fall back to the three required fields */
@@ -563,8 +553,8 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
 })();
 
 // ---- Motion: the headline word by word, screens that fly in ---------------
-// The head script sets .js-words before first paint; this splits every
-// headline variant into words, numbered for the stagger, and then shows it.
+// The head script sets .js-words before first paint; this splits the headline
+// (both roles) into words, numbered for the stagger, and then shows it.
 (function () {
   const root = document.documentElement;
   if (root.classList.contains("js-words")) {
@@ -669,19 +659,8 @@ if (!prefersReducedMotion && "IntersectionObserver" in window) {
   update();
 })();
 
-// ---- Variant hero ----------------------------------------------------------
-// The variant is also set by an inline script in <head> so the right headline
-// is there on first paint. This re-asserts it after hydration and is harmless
-// if the head script already ran.
-function applyVariant() {
-  const v = ATTR.variant;
-  document.documentElement.setAttribute("data-variant", v || "default");
-  // Meta traffic is fan traffic: never land them on the artist view.
-  if (ATTR.source === "meta") applyRole("fan");
-}
-
-// Init.
-applyVariant();
+// Init. Meta traffic is fan traffic: never land them on the artist view.
+if (ATTR.source === "meta") applyRole("fan");
 applyRole(getRole());
 setupArtistRequest();
 setupShare();

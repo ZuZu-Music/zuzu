@@ -229,8 +229,9 @@ main { overflow-x: clip; }
 }
 
 /* ---------- Hero: the cover ----------
-   Owns the first screen (svh so phone chrome doesn't push the form off), content
-   vertically centred. Full-strength mode gradient, dissolving into the page. */
+   Owns the first screen (svh, so phone chrome is allowed for), content
+   vertically centred. No form up here: the waitlist form is at the bottom
+   (Antonis, 2026-11-24), and the header's Join the waitlist goes to it. Full-strength mode gradient, dissolving into the page. */
 .hero {
   position: relative;
   z-index: 0;
@@ -262,10 +263,10 @@ main { overflow-x: clip; }
   line-height: 1.08;
   letter-spacing: -.02em;
   margin: 0 0 24px;
-  display: grid;                         /* variants overlap in one cell: no shift on toggle */
+  display: grid;                         /* the fan and artist lines share one cell */
 }
 .hero__title > span { grid-area: 1 / 1; }
-.hero__ledes { display: grid; margin: 0 0 32px; }
+.hero__ledes { display: grid; margin: 0; }
 .hero__lede {
   grid-area: 1 / 1;
   max-width: 44ch;
@@ -295,24 +296,24 @@ main { overflow-x: clip; }
    and everything else keep the guide's 12. */
 .hero__shot, .beat__shot, .stage__shot { border-radius: 15.5% / 7.1%; }
 
-/* Phones: headline, lede, then the form and its price line, so all of it is
-   in the first view (390x844 inside Instagram's browser), then both screens
-   (the same pair as on wide screens, scaled to the phone). The copy wrapper
-   steps out of the way (display: contents) so the four can be ordered. */
+/* Phones: headline and lede, then the screens straight after, so the app is
+   in the first view (Antonis, 2026-11-24: "the screen really needs to appear
+   first on the mobile version"). The same pair as on wide screens, scaled to
+   the phone and allowed to run past the fold. The copy wrapper steps out of
+   the way (display: contents) so the pieces can be ordered. */
 @media (max-width: 899px) {
   .hero { min-height: 0; align-items: flex-start; }
   .hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
   .hero__copy { display: contents; }
   .hero .eyebrow, .hero__title, .hero__ledes { order: 1; }
-  .hero .waitlist-form { order: 2; width: 100%; }
   .hero__visual {
-    order: 3;
-    --w: min(200px, 46vw);
+    order: 2;
+    --w: min(230px, 52vw);
     position: relative;
     justify-self: center;
     width: calc(var(--w) * 1.66);
     height: calc(var(--w) * 2.174 + 40px);
-    margin: 36px 0 0;
+    margin: 28px 0 0;
   }
   .hero__shot { position: absolute; width: var(--w); height: auto; }
   .hero__shot--back  { left: 0; top: 0; }
@@ -337,26 +338,9 @@ main { overflow-x: clip; }
   .hero__title { font-size: clamp(2rem, 4.2vw, 3.2rem); }
 }
 
-/* ---------- Role / variant visibility ---------- */
+/* ---------- Role visibility ---------- */
 body[data-role="artist"] .r-fan,
 body[data-role="fan"]    .r-artist { display: none !important; }
-
-/* In the hero the inactive role's copy stays in layout (hidden, not removed) so
-   the title and lede blocks keep the height of the taller variant and the form
-   never moves between views. */
-body[data-role="artist"] .hero__title .r-fan,
-body[data-role="fan"]    .hero__title .r-artist,
-body[data-role="artist"] .hero__ledes .r-fan,
-body[data-role="fan"]    .hero__ledes .r-artist {
-  display: block !important;
-  visibility: hidden;
-}
-/* Ad variants: all four headlines ship in the DOM, CSS picks one before paint. */
-.v-default, .v-ad1, .v-ad2, .v-ad4 { display: none; }
-:root[data-variant="default"] .v-default,
-:root[data-variant="ad1"]     .v-ad1,
-:root[data-variant="ad2"]     .v-ad2,
-:root[data-variant="ad4"]     .v-ad4 { display: block; }
 
 /* Artist/fan crossfade via the View Transitions API. */
 @supports (view-transition-name: zuzu) {
@@ -639,7 +623,8 @@ body[data-role="fan"]    .hero__ledes .r-artist {
   .btn { flex: 1; }
 }
 /* Phones inside the Instagram/Facebook browser lose height to their chrome;
-   these caps keep the headline, lede, field and button above the fold. */
+   these caps keep the headline, the lede and the top of the screens in the
+   first view. */
 @media (max-width: 480px) {
   .hero__title { font-size: clamp(1.6rem, 7.4vw, 2.1rem); line-height: 1.12; }
   .hero__lede  { font-size: 1rem; line-height: 1.45; }
@@ -724,7 +709,6 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 }
 .js-words .eyebrow { animation: zz-rise var(--text-dur) var(--fly) both; }
 .js-words .hero__ledes { animation: zz-rise var(--text-dur) var(--fly) .4s both; }
-.js-words .hero .waitlist-form { animation: zz-rise var(--text-dur) var(--fly) .52s both; }
 
 /* The hero's screens: the one behind from the left, the one in front from
    the right, a beat after the words. */
@@ -752,7 +736,7 @@ body[data-role="fan"]    .hero__ledes .r-artist {
 
 @media (prefers-reduced-motion: reduce) {
   .js-words .hero__title, .hero__title .w, .js-words .eyebrow, .js-words .hero__ledes,
-  .js-words .hero .waitlist-form, .js-words .hero__shot--back, .js-words .hero__shot--front,
+  .js-words .hero__shot--back, .js-words .hero__shot--front,
   .panel:not([hidden]) .panel__shot.is-flown { animation: none; opacity: 1; filter: none; transform: none; }
   .js-fly [data-fly] { opacity: 1; transform: none; }
 }

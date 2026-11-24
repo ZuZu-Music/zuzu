@@ -31,29 +31,22 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet" />
 
-  <!-- Variant is resolved before first paint so the ad's headline is the first
-       thing painted: no flash of the default, and no layout shift. Kept inline
-       and tiny on purpose; the full logic lives in script.js. -->
+  <!-- The headline animates in word by word; flagged before first paint so it
+       never shows, vanishes and shows again. Skipped for reduced motion. Kept
+       inline and tiny on purpose; the rest lives in script.js. -->
   <script>
     (function () {
       try {
-        var v = new URLSearchParams(location.search).get("utm_content");
-        var known = { ad1: 1, ad2: 1, ad4: 1 };
-        document.documentElement.setAttribute("data-variant", known[v] ? v : "default");
-        /* The headline animates in word by word; flagged before first paint so
-           it never shows, vanishes and shows again. Skipped for reduced motion. */
         if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
           document.documentElement.classList.add("js-words");
         }
-      } catch (e) {
-        document.documentElement.setAttribute("data-variant", "default");
-      }
+      } catch (e) { /* no animation, the headline simply shows */ }
     })();
   </script>
 
-  <!-- The direct line screen is the hero on every width: in front of the artist profile on wide screens, peeking under the form on phones. -->
+  <!-- The direct line screen is the hero on every width: in front of the artist profile on wide screens, right under the headline on phones. -->
   <link rel="preload" as="image" href="assets/shot-line.webp" />
-  <link rel="stylesheet" href="styles.css?v=202611231655" />
+  <link rel="stylesheet" href="styles.css?v=202611241723" />
 </head>
 <body data-role="fan">
   <a class="skip-link" href="#top">Skip to content</a>
@@ -96,10 +89,7 @@
           </p>
           <h1 class="hero__title" id="hero-title">
             <span class="r-artist">Your audience should<br class="hero__break" />belong to you.</span>
-            <span class="r-fan v-default">Get closer than<br class="hero__break" />a follow.</span>
-            <span class="r-fan v-ad1">Hear it before<br class="hero__break" />the world does.</span>
-            <span class="r-fan v-ad2">Everything that<br class="hero__break" />never gets released.</span>
-            <span class="r-fan v-ad4">The most direct line<br class="hero__break" />to your favorite artist.</span>
+            <span class="r-fan">Get closer than<br class="hero__break" />a follow.</span>
           </h1>
           <div class="hero__ledes">
             <p class="hero__lede r-artist">
@@ -107,36 +97,17 @@
               <strong>own who they are</strong>: real names and contact you keep, not numbers on a
               dashboard you rent.
             </p>
-            <p class="hero__lede r-fan v-default">
+            <p class="hero__lede r-fan">
               <strong>Unreleased music, early.</strong> A direct line to the artists you love, and the
               people who hear it the way you do.
             </p>
-            <p class="hero__lede r-fan v-ad1">
-              The first loop, the voice memo, the demo. <strong>On Zuzu, all of it lands in the artist’s Fan Community before release day.</strong>
-            </p>
-            <p class="hero__lede r-fan v-ad2">
-              Stems, demos, live takes and voice memos. <strong>On Zuzu they live in the artist’s Vault, open to the fans who join.</strong>
-            </p>
-            <p class="hero__lede r-fan v-ad4">
-              Join an artist’s Fan Community and the direct line opens. <strong>One thread, just the two of you: they write to you, and you write back.</strong>
-            </p>
           </div>
-
-          <form class="waitlist-form waitlist-form--hero" data-waitlist novalidate>
-            <div class="field">
-              <input class="field__input" id="email-hero" type="email" name="email" inputmode="email" autocomplete="email"
-                     placeholder="you@email.com" aria-label="Email address" required />
-              <button class="btn" type="submit" data-cta>Join the waitlist</button>
-            </div>
-            <p class="waitlist-form__note"><span data-note>Free. First access at launch, and your handle before anyone else.</span> <a href="/privacy/">How we use your email</a></p>
-            <p class="waitlist-form__status" role="status" aria-live="polite"></p>
-          </form>
         </div>
 
         <figure class="hero__visual">
           <!-- Fans: the direct line in front of the artist's profile. -->
           <img class="hero__shot hero__shot--back shot r-fan" src="assets/shot-artist.webp" width="1206" height="2622"
-               loading="lazy" decoding="async" alt="" />
+               decoding="async" alt="" />
           <img class="hero__shot hero__shot--front shot r-fan" src="assets/shot-line.webp" width="1206" height="2622"
                fetchpriority="high" decoding="async"
                alt="The Zuzu app: a direct line between a fan and an artist, the artist asking what pulled you in. Behind it, the artist’s profile with their photo and releases." />
@@ -443,7 +414,7 @@
                      placeholder="you@email.com" aria-label="Email address" required />
               <button class="btn" type="submit" data-cta>Join the waitlist</button>
             </div>
-            <p class="waitlist-form__note">Free to join, free to stream. At launch, each artist’s Fan Community is $2 a month, cancel anytime. <a href="/privacy/">How we use your email</a></p>
+            <p class="waitlist-form__note"><span data-note>Free to join, free to stream. At launch, each artist’s Fan Community is $2 a month, cancel anytime.</span> <a href="/privacy/">How we use your email</a></p>
             <p class="waitlist-form__status" role="status" aria-live="polite"></p>
           </form>
 
@@ -490,6 +461,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=202611231655"></script>
+  <script src="script.js?v=202611241723"></script>
 </body>
 </html>
