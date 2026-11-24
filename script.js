@@ -215,7 +215,7 @@ function applyRole(role) {
     if (!btn.disabled) btn.textContent = COPY[role].cta;
   });
 
-  // Swap the waitlist note (the form at the bottom).
+  // Swap the hero note.
   const note = document.querySelector("[data-note]");
   if (note) note.textContent = COPY[role].note;
 

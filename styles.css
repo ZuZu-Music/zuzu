@@ -229,9 +229,8 @@ main { overflow-x: clip; }
 }
 
 /* ---------- Hero: the cover ----------
-   Owns the first screen (svh, so phone chrome is allowed for), content
-   vertically centred. No form up here: the waitlist form is at the bottom
-   (Antonis, 2026-11-24), and the header's Join the waitlist goes to it. Full-strength mode gradient, dissolving into the page. */
+   Owns the first screen (svh so phone chrome doesn't push the form off), content
+   vertically centred. Full-strength mode gradient, dissolving into the page. */
 .hero {
   position: relative;
   z-index: 0;
@@ -263,10 +262,10 @@ main { overflow-x: clip; }
   line-height: 1.08;
   letter-spacing: -.02em;
   margin: 0 0 24px;
-  display: grid;                         /* the fan and artist lines share one cell */
+  display: grid;                         /* both roles overlap in one cell: no shift on toggle */
 }
 .hero__title > span { grid-area: 1 / 1; }
-.hero__ledes { display: grid; margin: 0; }
+.hero__ledes { display: grid; margin: 0 0 32px; }
 .hero__lede {
   grid-area: 1 / 1;
   max-width: 44ch;
@@ -298,16 +297,18 @@ main { overflow-x: clip; }
 
 /* Phones: headline and lede, then the screens straight after, so the app is
    in the first view (Antonis, 2026-11-24: "the screen really needs to appear
-   first on the mobile version"). The same pair as on wide screens, scaled to
-   the phone and allowed to run past the fold. The copy wrapper steps out of
-   the way (display: contents) so the pieces can be ordered. */
+   first on the mobile version"). No form up here on phones: theirs is the
+   one at the bottom. Wide screens keep the hero form. The copy wrapper steps
+   out of the way (display: contents) so the pieces can be ordered. */
 @media (max-width: 899px) {
   .hero { min-height: 0; align-items: flex-start; }
   .hero__grid { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
   .hero__copy { display: contents; }
   .hero .eyebrow, .hero__title, .hero__ledes { order: 1; }
+  .hero__ledes { margin-bottom: 0; }
+  .hero .waitlist-form { display: none; }
   .hero__visual {
-    order: 2;
+    order: 3;
     --w: min(230px, 52vw);
     position: relative;
     justify-self: center;
@@ -341,6 +342,20 @@ main { overflow-x: clip; }
 /* ---------- Role visibility ---------- */
 body[data-role="artist"] .r-fan,
 body[data-role="fan"]    .r-artist { display: none !important; }
+
+/* Wide screens: in the hero the inactive role's copy stays in layout (hidden,
+   not removed) so the title and lede blocks keep the height of the taller
+   role and the form never moves between views. Phones have no form up top,
+   so there the hidden role takes no space and leaves no gap. */
+@media (min-width: 900px) {
+  body[data-role="artist"] .hero__title .r-fan,
+  body[data-role="fan"]    .hero__title .r-artist,
+  body[data-role="artist"] .hero__ledes .r-fan,
+  body[data-role="fan"]    .hero__ledes .r-artist {
+    display: block !important;
+    visibility: hidden;
+  }
+}
 
 /* Artist/fan crossfade via the View Transitions API. */
 @supports (view-transition-name: zuzu) {
@@ -709,6 +724,7 @@ body[data-role="fan"]    .r-artist { display: none !important; }
 }
 .js-words .eyebrow { animation: zz-rise var(--text-dur) var(--fly) both; }
 .js-words .hero__ledes { animation: zz-rise var(--text-dur) var(--fly) .4s both; }
+.js-words .hero .waitlist-form { animation: zz-rise var(--text-dur) var(--fly) .52s both; }
 
 /* The hero's screens: the one behind from the left, the one in front from
    the right, a beat after the words. */
@@ -736,7 +752,7 @@ body[data-role="fan"]    .r-artist { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .js-words .hero__title, .hero__title .w, .js-words .eyebrow, .js-words .hero__ledes,
-  .js-words .hero__shot--back, .js-words .hero__shot--front,
+  .js-words .hero .waitlist-form, .js-words .hero__shot--back, .js-words .hero__shot--front,
   .panel:not([hidden]) .panel__shot.is-flown { animation: none; opacity: 1; filter: none; transform: none; }
   .js-fly [data-fly] { opacity: 1; transform: none; }
 }

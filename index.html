@@ -46,7 +46,7 @@
 
   <!-- The direct line screen is the hero on every width: in front of the artist profile on wide screens, right under the headline on phones. -->
   <link rel="preload" as="image" href="assets/shot-line.webp" />
-  <link rel="stylesheet" href="styles.css?v=202611241723" />
+  <link rel="stylesheet" href="styles.css?v=202611241727" />
 </head>
 <body data-role="fan">
   <a class="skip-link" href="#top">Skip to content</a>
@@ -102,6 +102,16 @@
               people who hear it the way you do.
             </p>
           </div>
+
+          <form class="waitlist-form waitlist-form--hero" data-waitlist novalidate>
+            <div class="field">
+              <input class="field__input" id="email-hero" type="email" name="email" inputmode="email" autocomplete="email"
+                     placeholder="you@email.com" aria-label="Email address" required />
+              <button class="btn" type="submit" data-cta>Join the waitlist</button>
+            </div>
+            <p class="waitlist-form__note"><span data-note>Free. First access at launch, and your handle before anyone else.</span> <a href="/privacy/">How we use your email</a></p>
+            <p class="waitlist-form__status" role="status" aria-live="polite"></p>
+          </form>
         </div>
 
         <figure class="hero__visual">
@@ -414,7 +424,7 @@
                      placeholder="you@email.com" aria-label="Email address" required />
               <button class="btn" type="submit" data-cta>Join the waitlist</button>
             </div>
-            <p class="waitlist-form__note"><span data-note>Free to join, free to stream. At launch, each artist’s Fan Community is $2 a month, cancel anytime.</span> <a href="/privacy/">How we use your email</a></p>
+            <p class="waitlist-form__note">Free to join, free to stream. At launch, each artist’s Fan Community is $2 a month, cancel anytime. <a href="/privacy/">How we use your email</a></p>
             <p class="waitlist-form__status" role="status" aria-live="polite"></p>
           </form>
 
@@ -461,6 +471,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=202611241723"></script>
+  <script src="script.js?v=202611241727"></script>
 </body>
 </html>
